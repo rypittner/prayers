@@ -10,8 +10,8 @@
     <style>
         /* CSS VARIABLES FOR MODERN, LIGHT THEME */
         :root {
-            --bg-color: #FAF9F6; /* Cream / Off White */
-            --primary-accent: #7C98A1; /* Muted Blue */
+            --bg-color: #EEECE9; /* Cream / Off White */
+            --primary-accent: #558a99; /* Muted Blue */
             --secondary-accent: #D4AF37; /* Muted Gold (for highlights/counters) */
             --header-font: 'Yrsa', serif;
             --body-font: 'Inter', sans-serif;
@@ -106,8 +106,9 @@
         }
 
         .card-name {
+        font-family:Yrsa, serif;
             font-weight: 600;
-            font-size: 1.1em;
+            font-size: 2em;
         }
 
         .card-date {
@@ -257,8 +258,8 @@
 
 <div class="container">
     <header>
-        <h1>Board</h1>
-        <button id="addPrayerBtn">+ <span>Request</span></button>
+        <h1>Prayer Intentions</h1>
+        <button id="addPrayerBtn">+ <span>New</span></button>
     </header>
 
     <div id="prayerCardsView"></div>
