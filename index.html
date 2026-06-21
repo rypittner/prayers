@@ -1,78 +1,560 @@
-// --- DATABASE (Replace original JS section with this concepts) ---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Prayer Board</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* CSS VARIABLES FOR MODERN, LIGHT THEME */
+        :root {
+            --bg-color: #FAF9F6; /* Cream / Off White */
+            --primary-accent: #7C98A1; /* Muted Blue */
+            --secondary-accent: #D4AF37; /* Muted Gold (for highlights/counters) */
+            --header-font: 'Yrsa', serif;
+            --body-font: 'Inter', sans-serif;
+            --text-color: #333333;
+            --card-bg: #FFFFFF;
+            --radius-main: 16px;
+            --radius-btn: 50px;
+            --radius-input: 8px;
+            --shadow-subtle: 0 4px 15px rgba(0,0,0,0.05);
+            --transition-speed: 0.3s;
+        }
 
-// 1. Initialise Firebase (Get this from your Firebase console)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--body-font);
+            display: flex;
+            justify-content: center;
+        }
 
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "your-project-id.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project-id.appspot.com",
-    messagingSenderId: "your-id",
-    appId: "your-app-id"
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 30px;
+        }
+
+        /* HEADER SECTION */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-family: var(--header-font);
+            color: var(--primary-accent);
+            font-size: 2.8em;
+            margin: 0;
+        }
+
+        /* MAIN ACTION BUTTON (Floating Style) */
+        #addPrayerBtn {
+            font-family: var(--body-font);
+            font-weight: 600;
+            background-color: var(--primary-accent);
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1em;
+            border-radius: var(--radius-btn);
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background var(--transition-speed), transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #addPrayerBtn:hover {
+            background-color: #6A8790;
+            transform: translateY(-2px);
+        }
+
+        #addPrayerBtn:active {
+            transform: translateY(1px);
+        }
+
+        /* CARD VIEW AREA */
+        #prayerCardsView {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* PRAYER REQUEST CARDS */
+        .prayer-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-main);
+            padding: 20px;
+            box-shadow: var(--shadow-subtle);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-header {
+            margin-bottom: 10px;
+        }
+
+        .card-name {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .card-date {
+            font-size: 0.85em;
+            color: #777;
+            margin-top: 2px;
+        }
+
+        .card-body {
+            font-size: 0.95em;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            flex-grow: 1; /* Pushes action area to the bottom */
+        }
+
+        /* ACTION AREA */
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #EEEEEE;
+            padding-top: 10px;
+        }
+
+        /* MODAL (OVERLAY AND FORM) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            transition: opacity var(--transition-speed);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-main);
+            padding: 30px;
+            width: 400px;
+            box-shadow: var(--shadow-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal h2 {
+            font-family: var(--header-font);
+            color: var(--primary-accent);
+            margin: 0;
+        }
+
+        /* MODAL FORM STYLING */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        input, textarea {
+            padding: 10px;
+            border: 1px solid #DDDDDD;
+            border-radius: var(--radius-input);
+            font-family: var(--body-font);
+            font-size: 1em;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .cancel-btn {
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            font-family: var(--body-font);
+        }
+
+        /* GENERIC BUTTONS (ACTION BUTTONS ON CARDS) */
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888888;
+            transition: color var(--transition-speed);
+            padding: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .edit-btn:hover { color: #555; }
+        .archive-btn:hover { color: #EE4B2B; } /* Warning color for archive */
+
+        /* PRAYED COUNTER */
+        .prayed-counter {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 2px solid #EEEEEE;
+            border-radius: var(--radius-btn);
+            padding: 6px 12px;
+            color: #888888;
+            cursor: pointer;
+            transition: color 0.2s, background 0.2s, border-color 0.2s;
+        }
+
+        .prayed-counter:hover {
+            color: #666;
+            background-color: #FDFBEE; /* very light gold highlight */
+            border-color: #E0E0E0;
+        }
+
+        /* Highlight style when clicked once */
+        .prayed-counter.active {
+            border-color: var(--secondary-accent);
+            background-color: var(--secondary-accent);
+            color: white;
+            font-weight: 600;
+        }
+
+        /* UTILITY */
+        .hidden { display: none; }
+        
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Board</h1>
+        <button id="addPrayerBtn">+ <span>Request</span></button>
+    </header>
+
+    <div id="prayerCardsView">
+        </div>
+</div>
+
+<div id="prayerModal" class="modal">
+    <div class="modal-content">
+        <h2 id="modalTitle">New Prayer Request</h2>
+        
+        <input type="hidden" id="editIndex"> <div class="input-group">
+            <label for="pName">Requester Name</label>
+            <input type="text" id="pName" placeholder="Name or Initials" required>
+        </div>
+
+        <div class="input-group">
+            <label for="pDate">Date</label>
+            <input type="date" id="pDate" required>
+        </div>
+
+        <div class="input-group">
+            <label for="pRequest">Prayer Request</label>
+            <textarea id="pRequest" rows="4" placeholder="Your intention here..." required></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button class="cancel-btn" id="closeModal">Cancel</button>
+            <button id="addPrayerBtn" class="confirm-btn">Save</button> </div>
+    </div>
+</div>
+
+<script>
+    // DEFINE STATE AND SELECTORS
+    const modal = document.getElementById('prayerModal');
+    const openBtn = document.getElementById('addPrayerBtn');
+    const closeBtn = document.getElementById('closeModal');
+    const submitBtn = document.querySelector('.modal-content #addPrayerBtn'); // Save button in modal
+    const viewArea = document.getElementById('prayerCardsView');
+
+    const nameInput = document.getElementById('pName');
+    const dateInput = document.getElementById('pDate');
+    const requestInput = document.getElementById('pRequest');
+    const editIndexInput = document.getElementById('editIndex');
+    const modalTitle = document.getElementById('modalTitle');
+
+    // State (Temporary storage using LocalStorage)
+    let prayerRequests = JSON.parse(localStorage.getItem('prayerBoardRequests')) || [];
+
+    // --- MODAL & FORM FUNCTIONS ---
+
+    // Sets default date (today's date)
+    const setToday = () => {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    }
+
+    const openModal = (editing = false) => {
+        modal.style.display = 'flex';
+        setToday(); // Default to today, but calendar is available
+        if(!editing) {
+            modalTitle.innerText = "New Prayer Request";
+            submitBtn.innerText = "Save";
+            editIndexInput.value = ''; // Clear edit index
+        }
+    };
+
+    const closeModal = () => {
+        modal.style.display = 'none';
+        // Clear fields on close
+        nameInput.value = '';
+        requestInput.value = '';
+        editIndexInput.value = '';
+    };
+
+    // Save or Update a prayer
+    const savePrayer = () => {
+        const name = nameInput.value;
+        const date = dateInput.value;
+        const request = requestInput.value;
+        const editIndex = editIndexInput.value;
+
+        if(!name || !request) {
+            alert('Please fill out the name and request fields.');
+            return;
+        }
+
+        const newPrayer = {
+            name,
+            date,
+            request,
+            count: 0, // Initial prayed counter
+            archived: false // Active state
+        };
+
+        if (editIndex !== '') {
+            // Updating existing prayer
+            // Keep the previous count
+            newPrayer.count = prayerRequests[editIndex].count;
+            prayerRequests[editIndex] = newPrayer;
+        } else {
+            // New prayer request
+            prayerRequests.push(newPrayer);
+        }
+
+        persistData();
+        renderCards();
+        closeModal();
+    };
+
+    // --- UI RENDERING FUNCTIONS ---
+
+    const renderCards = () => {
+        viewArea.innerHTML = ''; // Clear grid
+
+        // Filter and display only non-archived cards
+        prayerRequests.forEach((prayer, index) => {
+            if(!prayer.archived) {
+                const card = createCardMarkup(prayer, index);
+                viewArea.appendChild(card);
+            }
+        });
+    }
+
+    const createCardMarkup = (prayer, index) => {
+        // Create the card container
+        const card = document.createElement('div');
+        card.classList.add('prayer-card');
+
+        // Internal HTML (modern view structure)
+        card.innerHTML = `
+            <div class="card-header">
+                <div class="card-name">${escapeHtml(prayer.name)}</div>
+                <div class="card-date">${formatDate(prayer.date)}</div>
+            </div>
+            <div class="card-body">
+                ${escapeHtml(prayer.request)}
+            </div>
+            <div class="card-actions">
+                <div class="prayed-counter ${prayer.count > 0 ? 'active' : ''}" onclick="increasePrayedCount(${index})">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"></path></svg>
+                    <span id="counter-${index}">${prayer.count}</span>
+                </div>
+                
+                <div>
+                    <button class="icon-btn edit-btn" onclick="openEdit(${index})">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button class="icon-btn archive-btn" onclick="archivePrayer(${index})">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                    </button>
+                </div>
+            </div>
+        `;
+        return card;
+    }
+
+    // --- INTERACTION LOGIC (EDIT, COUNTER, ARCHIVE) ---
+
+    // Open Edit mode
+    const openEdit = (index) => {
+        const prayer = prayerRequests[index];
+        modalTitle.innerText = "Edit Prayer Request";
+        submitBtn.innerText = "Update";
+
+        // Pre-fill inputs
+        nameInput.value = prayer.name;
+        dateInput.value = prayer.date;
+        requestInput.value = prayer.request;
+        editIndexInput.value = index;
+
+        openModal(true);
+    };
+
+    // Increase sprayed count when button is clicked
+    const increasePrayedCount = (index) => {
+        prayerRequests[index].count++;
+        persistData();
+        renderCards(); // Re-render to update text and highlight state
+    }
+
+    // Mark prayer as archived (soft delete)
+    const archivePrayer = (index) => {
+        // Simple confirmation
+        if (confirm("Are you sure you want to archive this prayer request? It will be hidden from the main board.")) {
+            prayerRequests[index].archived = true;
+            persistData();
+            renderCards();
+        }
+    }
+
+    // --- UTILITY/LOCAL STORAGE ---
+
+    const persistData = () => {
+        localStorage.setItem('prayerBoardRequests', JSON.stringify(prayerRequests));
+    }
+
+    const formatDate = (dateStr) => {
+        if(!dateStr) return "";
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateStr).toLocaleDateString(undefined, options);
+    }
+
+    // Sanitize user inputs
+    const escapeHtml = (unsafe) => {
+        return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+    }
+
+    // EVENTS
+    openBtn.onclick = () => openModal();
+    closeBtn.onclick = (e) => { e.preventDefault(); closeModal(); }; // Avoid form trigger
+    submitBtn.onclick = (e) => { e.preventDefault(); savePrayer(); }; // Manual save logic
+
+    // Close modal if overlay is clicked
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+
+    // INITIAL RENDER
+    renderCards();
+
+    // --- DATABASE (JSONbin.io Implementation) ---
+
+const BIN_ID = "YOUR_BIN_ID";
+const MASTER_KEY = "YOUR_JSONBIN_MASTER_KEY"; // Keep this secret!
+const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+// 1. Fetching Data (GET Request)
+const loadPrayers = async () => {
+    const response = await fetch(BASE_URL, {
+        headers: { "X-Master-Key": MASTER_KEY }
+    });
+    const result = await response.json();
+    prayerRequests = result.record || []; // JSONbin stores data in a 'record' field
+    renderCards();
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const prayersCol = collection(db, 'prayerRequests'); // Defined Collection
-
-
-// --- REPLACE ORIGINAL DATA FUNCTIONS ---
-
-// 1. Loading Prayers (Using Real-time Updates)
-const loadPrayers = () => {
-    // onSnapshot automatically updates the UI when the DB changes
-    onSnapshot(prayersCol, (snapshot) => {
-        prayerRequests = []; // Clear current state
-        snapshot.forEach((doc) => {
-            // Include Firestore ID for editing/archiving
-            let data = doc.data();
-            data.id = doc.id; 
-            prayerRequests.push(data);
-        });
-        renderCards(); // Re-render whenever data is loaded
+// 2. Saving Data (Helper to push current state back to JSONbin)
+const persistToJSONbin = async () => {
+    await fetch(BASE_URL, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": MASTER_KEY
+        },
+        body: JSON.stringify(prayerRequests)
     });
 };
 
-
-// 2. Replacing savePrayer() and persistData()
+// 3. Updated Save Function
 const savePrayer = async () => {
-    // (Aquire form values as before...)
-
+    // ... (Acquire form values: name, date, request as before) ...
     const editIndex = editIndexInput.value;
-    const newPrayer = { name, date, request, count: 0, archived: false };
 
     if (editIndex !== '') {
-        // UPDATE Existing document using its Firebase ID
-        const originalPrayer = prayerRequests[editIndex];
-        const prayerDocRef = doc(db, 'prayerRequests', originalPrayer.id);
-        
-        // Use previous count, but update other fields
-        await updateDoc(prayerDocRef, { name, date, request });
+        // UPDATE existing
+        prayerRequests[editIndex] = { 
+            ...prayerRequests[editIndex], 
+            name, date, request 
+        };
     } else {
-        // CREATE New document
-        await addDoc(prayersCol, newPrayer);
+        // CREATE new
+        prayerRequests.push({ name, date, request, count: 0, archived: false });
     }
+
+    await persistToJSONbin();
     closeModal();
+    // No need to call renderCards() here because savePrayer updates the state
+    // and ideally your renderCards is called inside loadPrayers or after successful save.
 };
 
-// 3. Replacing increasePrayedCount() and archivePrayer()
+// 4. Updating Count and Archiving
 const increasePrayedCount = async (index) => {
-    const prayer = prayerRequests[index];
-    const prayerDocRef = doc(db, 'prayerRequests', prayer.id);
-
-    // Update count directly in the DB
-    await updateDoc(prayerDocRef, { count: prayer.count + 1 });
-}
+    prayerRequests[index].count += 1;
+    await persistToJSONbin();
+    renderCards(); // Re-render to show updated count
+};
 
 const archivePrayer = async (index) => {
-    const prayer = prayerRequests[index];
-    if (confirm("Are you sure...")) {
-        const prayerDocRef = doc(db, 'prayerRequests', prayer.id);
-        await updateDoc(prayerDocRef, { archived: true });
+    if (confirm("Are you sure?")) {
+        prayerRequests[index].archived = true;
+        await persistToJSONbin();
+        renderCards();
     }
-}
+};
 
 // Initial Load
 loadPrayers();
+
+</script>
+
+</body>
+</html>
