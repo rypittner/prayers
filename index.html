@@ -261,15 +261,16 @@
         <button id="addPrayerBtn">+ <span>Request</span></button>
     </header>
 
-    <div id="prayerCardsView">
-        </div>
+    <div id="prayerCardsView"></div>
 </div>
 
 <div id="prayerModal" class="modal">
     <div class="modal-content">
         <h2 id="modalTitle">New Prayer Request</h2>
         
-        <input type="hidden" id="editIndex"> <div class="input-group">
+        <input type="hidden" id="editIndex"> 
+        
+        <div class="input-group">
             <label for="pName">Requester Name</label>
             <input type="text" id="pName" placeholder="Name or Initials" required>
         </div>
@@ -286,7 +287,8 @@
 
         <div class="form-actions">
             <button class="cancel-btn" id="closeModal">Cancel</button>
-            <button id="addPrayerBtn" class="confirm-btn">Save</button> </div>
+            <button id="submitPrayerBtn" class="confirm-btn">Save</button> 
+        </div>
     </div>
 </div>
 
@@ -295,7 +297,7 @@
     const modal = document.getElementById('prayerModal');
     const openBtn = document.getElementById('addPrayerBtn');
     const closeBtn = document.getElementById('closeModal');
-    const submitBtn = document.querySelector('.modal-content #addPrayerBtn'); // Save button in modal
+    const submitBtn = document.getElementById('submitPrayerBtn'); 
     const viewArea = document.getElementById('prayerCardsView');
 
     const nameInput = document.getElementById('pName');
@@ -304,37 +306,48 @@
     const editIndexInput = document.getElementById('editIndex');
     const modalTitle = document.getElementById('modalTitle');
 
-    // State (Temporary storage using LocalStorage)
-    let prayerRequests = JSON.parse(localStorage.getItem('prayerBoardRequests')) || [];
+    // State (Temporary array held in memory, synced to JSONbin)
+    let prayerRequests = [];
 
-    // --- MODAL & FORM FUNCTIONS ---
+    // --- CONFIGURATION (REPLACE KEYS HERE) ---
+    const BIN_ID = "6a386bb8f5f4af5e291a1c9e";
+    const MASTER_KEY = "$2a$10$uWA6RwV4hxUT6D49HU56VuPjVsoNcHcTmf.jSgx.o6RXd2G1wGyse"; 
+    const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-    // Sets default date (today's date)
-    const setToday = () => {
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.value = today;
-    }
+    // --- DATABASE (JSONbin.io Implementation) ---
 
-    const openModal = (editing = false) => {
-        modal.style.display = 'flex';
-        setToday(); // Default to today, but calendar is available
-        if(!editing) {
-            modalTitle.innerText = "New Prayer Request";
-            submitBtn.innerText = "Save";
-            editIndexInput.value = ''; // Clear edit index
+    // 1. Fetching Data (GET Request)
+    const loadPrayers = async () => {
+        try {
+            const response = await fetch(BASE_URL, {
+                headers: { "X-Master-Key": MASTER_KEY }
+            });
+            const result = await response.json();
+            prayerRequests = result.record || []; // JSONbin stores data in a 'record' field
+            renderCards();
+        } catch (err) {
+            console.error("Error loading data from JSONbin:", err);
         }
     };
 
-    const closeModal = () => {
-        modal.style.display = 'none';
-        // Clear fields on close
-        nameInput.value = '';
-        requestInput.value = '';
-        editIndexInput.value = '';
+    // 2. Saving Data (Helper to push current state back to JSONbin)
+    const persistToJSONbin = async () => {
+        try {
+            await fetch(BASE_URL, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Master-Key": MASTER_KEY
+                },
+                body: JSON.stringify(prayerRequests)
+            });
+        } catch (err) {
+            console.error("Error saving data to JSONbin:", err);
+        }
     };
 
-    // Save or Update a prayer
-    const savePrayer = () => {
+    // 3. Save or Update a Prayer
+    const savePrayer = async () => {
         const name = nameInput.value;
         const date = dateInput.value;
         const request = requestInput.value;
@@ -345,28 +358,36 @@
             return;
         }
 
-        const newPrayer = {
-            name,
-            date,
-            request,
-            count: 0, // Initial prayed counter
-            archived: false // Active state
-        };
-
         if (editIndex !== '') {
-            // Updating existing prayer
-            // Keep the previous count
-            newPrayer.count = prayerRequests[editIndex].count;
-            prayerRequests[editIndex] = newPrayer;
+            // UPDATE existing
+            prayerRequests[editIndex] = { 
+                ...prayerRequests[editIndex], 
+                name, date, request 
+            };
         } else {
-            // New prayer request
-            prayerRequests.push(newPrayer);
+            // CREATE new
+            prayerRequests.push({ name, date, request, count: 0, archived: false });
         }
 
-        persistData();
-        renderCards();
+        await persistToJSONbin();
         closeModal();
+        renderCards();
     };
+
+    // 4. Updating Count and Archiving
+    const increasePrayedCount = async (index) => {
+        prayerRequests[index].count += 1;
+        await persistToJSONbin();
+        renderCards(); // Re-render to show updated count and highlight state
+    }
+
+    const archivePrayer = async (index) => {
+        if (confirm("Are you sure you want to archive this prayer request? It will be hidden from the main board.")) {
+            prayerRequests[index].archived = true;
+            await persistToJSONbin();
+            renderCards();
+        }
+    }
 
     // --- UI RENDERING FUNCTIONS ---
 
@@ -383,11 +404,9 @@
     }
 
     const createCardMarkup = (prayer, index) => {
-        // Create the card container
         const card = document.createElement('div');
         card.classList.add('prayer-card');
 
-        // Internal HTML (modern view structure)
         card.innerHTML = `
             <div class="card-header">
                 <div class="card-name">${escapeHtml(prayer.name)}</div>
@@ -415,7 +434,30 @@
         return card;
     }
 
-    // --- INTERACTION LOGIC (EDIT, COUNTER, ARCHIVE) ---
+    // --- MODAL & FORM FUNCTIONS ---
+
+    const setToday = () => {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    }
+
+    const openModal = (editing = false) => {
+        modal.style.display = 'flex';
+        setToday(); // Default to today, but calendar is available
+        if(!editing) {
+            modalTitle.innerText = "New Prayer Request";
+            submitBtn.innerText = "Save";
+            editIndexInput.value = ''; // Clear edit index
+        }
+    };
+
+    const closeModal = () => {
+        modal.style.display = 'none';
+        // Clear fields on close
+        nameInput.value = '';
+        requestInput.value = '';
+        editIndexInput.value = '';
+    };
 
     // Open Edit mode
     const openEdit = (index) => {
@@ -432,28 +474,7 @@
         openModal(true);
     };
 
-    // Increase sprayed count when button is clicked
-    const increasePrayedCount = (index) => {
-        prayerRequests[index].count++;
-        persistData();
-        renderCards(); // Re-render to update text and highlight state
-    }
-
-    // Mark prayer as archived (soft delete)
-    const archivePrayer = (index) => {
-        // Simple confirmation
-        if (confirm("Are you sure you want to archive this prayer request? It will be hidden from the main board.")) {
-            prayerRequests[index].archived = true;
-            persistData();
-            renderCards();
-        }
-    }
-
-    // --- UTILITY/LOCAL STORAGE ---
-
-    const persistData = () => {
-        localStorage.setItem('prayerBoardRequests', JSON.stringify(prayerRequests));
-    }
+    // --- UTILITY FORMATTING ---
 
     const formatDate = (dateStr) => {
         if(!dateStr) return "";
@@ -471,7 +492,7 @@
          .replace(/'/g, "&#039;");
     }
 
-    // EVENTS
+    // --- EVENTS ---
     openBtn.onclick = () => openModal();
     closeBtn.onclick = (e) => { e.preventDefault(); closeModal(); }; // Avoid form trigger
     submitBtn.onclick = (e) => { e.preventDefault(); savePrayer(); }; // Manual save logic
@@ -483,76 +504,8 @@
         }
     }
 
-    // INITIAL RENDER
-    renderCards();
-
-    // --- DATABASE (JSONbin.io Implementation) ---
-
-const BIN_ID = "6a386bb8f5f4af5e291a1c9e";
-const MASTER_KEY = "$2a$10$uWA6RwV4hxUT6D49HU56VuPjVsoNcHcTmf.jSgx.o6RXd2G1wGyse"; // Keep this secret!
-const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-
-// 1. Fetching Data (GET Request)
-const loadPrayers = async () => {
-    const response = await fetch(BASE_URL, {
-        headers: { "X-Master-Key": MASTER_KEY }
-    });
-    const result = await response.json();
-    prayerRequests = result.record || []; // JSONbin stores data in a 'record' field
-    renderCards();
-};
-
-// 2. Saving Data (Helper to push current state back to JSONbin)
-const persistToJSONbin = async () => {
-    await fetch(BASE_URL, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "X-Master-Key": MASTER_KEY
-        },
-        body: JSON.stringify(prayerRequests)
-    });
-};
-
-// 3. Updated Save Function
-const savePrayer = async () => {
-    // ... (Acquire form values: name, date, request as before) ...
-    const editIndex = editIndexInput.value;
-
-    if (editIndex !== '') {
-        // UPDATE existing
-        prayerRequests[editIndex] = { 
-            ...prayerRequests[editIndex], 
-            name, date, request 
-        };
-    } else {
-        // CREATE new
-        prayerRequests.push({ name, date, request, count: 0, archived: false });
-    }
-
-    await persistToJSONbin();
-    closeModal();
-    // No need to call renderCards() here because savePrayer updates the state
-    // and ideally your renderCards is called inside loadPrayers or after successful save.
-};
-
-// 4. Updating Count and Archiving
-const increasePrayedCount = async (index) => {
-    prayerRequests[index].count += 1;
-    await persistToJSONbin();
-    renderCards(); // Re-render to show updated count
-};
-
-const archivePrayer = async (index) => {
-    if (confirm("Are you sure?")) {
-        prayerRequests[index].archived = true;
-        await persistToJSONbin();
-        renderCards();
-    }
-};
-
-// Initial Load
-loadPrayers();
+    // --- INITIALIZATION ---
+    loadPrayers();
 
 </script>
 
