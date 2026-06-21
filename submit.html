@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Prayer Intention</title>
+    <title>Submit Prayer Intentions for Ryan</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -84,20 +84,20 @@
 <body>
 
 <div class="container">
-    <h1>Send a Prayer Intention</h1>
-    <p>Please share your request below. It will be added to the prayer list.</p>
+    <h1>Prayer Intentions</h1>
+    <p>Please let me know how I can pray for your below!</p>
     
     <div class="input-group">
         <label>Your Name</label>
-        <input type="text" id="pName" placeholder="Name or Initials">
+        <input type="text" id="pName" placeholder="Name or Anonymous">
     </div>
 
     <div class="input-group">
         <label>Prayer Request</label>
-        <textarea id="pRequest" rows="5" placeholder="What can we pray for today?"></textarea>
+        <textarea id="pRequest" rows="5" placeholder="How can I pray for you?"></textarea>
     </div>
 
-    <button id="submitBtn">Submit Request</button>
+    <button id="submitBtn">Submit Intenion</button>
     <div id="statusMsg"></div>
 </div>
 
@@ -142,7 +142,7 @@
                 body: JSON.stringify(currentList)
             });
 
-            statusMsg.innerText = "Thank you! Your intention has been submitted.";
+            statusMsg.innerText = "Thank you for submitting your intentions. Know of my prayers for you! ~Ryan Pittner.";
             document.getElementById('pName').value = '';
             document.getElementById('pRequest').value = '';
         } catch (e) {
