@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yrsa Prayer Board</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FAF9F6;
+            --primary-accent: #7C98A1;
+            --secondary-accent: #D4AF37;
+            --card-bg: #FFFFFF;
+        }
+        body { background-color: var(--bg-color); font-family: 'Inter', sans-serif; color: #333; margin: 0; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 900px; padding: 40px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        h1 { font-family: 'Yrsa', serif; color: var(--primary-accent); font-size: 3em; margin: 0; }
+        #addPrayerBtn { background-color: var(--primary-accent); color: white; border: none; padding: 12px 24px; border-radius: 50px; cursor: pointer; font-weight: 600; }
+        #prayerCardsView { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .prayer-card { background: var(--card-bg); border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .card-name { font-weight: 700; margin-bottom: 5px; }
+        .card-date { font-size: 0.8em; color: #888; margin-bottom: 15px; }
+        .card-actions { display: flex; justify-content: space-between; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+        .prayed-counter { cursor: pointer; color: var(--secondary-accent); font-weight: 600; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; width: 350px; display: flex; flex-direction: column; gap: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Yrsa</h1>
+        <button id="addPrayerBtn">+ Request</button>
+    </header>
+    <div id="prayerCardsView"></div>
+</div>
+
+<div id="prayerModal" class="modal">
+    <div class="modal-content">
+        <h2 id="modalTitle">New Prayer</h2>
+        <input type="hidden" id="editIndex">
+        <input type="text" id="pName" placeholder="Name">
+        <input type="date" id="pDate">
+        <textarea id="pRequest" placeholder="Prayer intention..."></textarea>
+        <button id="saveBtn">Save Prayer</button>
+        <button onclick="closeModal()">Cancel</button>
+    </div>
+</div>
+
+<script>
+    // --- UPDATE THESE TWO LINES WITH YOUR JSONBIN.IO INFO ---
+    const BIN_ID = 'YOUR_BIN_ID_HERE';
+    const MASTER_KEY = 'YOUR_MASTER_KEY_HERE';
+
+    let prayerRequests = [];
+
+    // API: Load Data
+    const loadPrayers = async () => {
+        try {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': MASTER_KEY }
+            });
+            const data = await res.json();
+            prayerRequests = data.record;
+            render();
+        } catch (e) { console.error("Load failed", e); }
+    };
+
+    // API: Save Data
+    const persistData = async () => {
+        await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY },
+            body: JSON.stringify(prayerRequests)
+        });
+        render();
+    };
+
+    // UI Logic
+    const render = () => {
+        const view = document.getElementById('prayerCardsView');
+        view.innerHTML = prayerRequests.map((p, i) => !p.archived ? `
+            <div class="prayer-card">
+                <div class="card-name">${p.name}</div>
+                <div class="card-date">${p.date}</div>
+                <div>${p.request}</div>
+                <div class="card-actions">
+                    <span class="prayed-counter" onclick="increment(${i})">Prayed: ${p.count}</span>
+                    <button onclick="archive(${i})">Archive</button>
+                </div>
+            </div>` : '').join('');
+    };
+
+    const increment = (i) => { prayerRequests[i].count++; persistData(); };
+    const archive = (i) => { prayerRequests[i].archived = true; persistData(); };
+
+    document.getElementById('saveBtn').onclick = () => {
+        const p = {
+            name: document.getElementById('pName').value,
+            date: document.getElementById('pDate').value,
+            request: document.getElementById('pRequest').value,
+            count: 0,
+            archived: false
+        };
+        prayerRequests.push(p);
+        persistData();
+        closeModal();
+    };
+
+    const closeModal = () => document.getElementById('prayerModal').style.display = 'none';
+    document.getElementById('addPrayerBtn').onclick = () => document.getElementById('prayerModal').style.display = 'flex';
+
+    loadPrayers();
+</script>
+</body>
+</html>
