@@ -109,6 +109,7 @@
         font-family:Yrsa, serif;
             font-weight: 600;
             font-size: 2em;
+            line-height:1;
         }
 
         .card-date {
@@ -200,7 +201,9 @@
         .form-actions {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-top: 10px;
+            gap: 10px;
         }
 
         .cancel-btn {
@@ -209,6 +212,63 @@
             color: #777;
             cursor: pointer;
             font-family: var(--body-font);
+            font-weight: 600;
+            padding: 10px 16px;
+            transition: color var(--transition-speed);
+        }
+
+        .cancel-btn:hover {
+            color: #555;
+        }
+
+        .confirm-btn {
+            background-color: var(--primary-accent);
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95em;
+            border-radius: var(--radius-btn);
+            cursor: pointer;
+            font-family: var(--body-font);
+            font-weight: 600;
+            transition: background var(--transition-speed);
+        }
+
+        .confirm-btn:hover {
+            background-color: #6A8790;
+        }
+
+        .archive-checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background-color: #FAFAF9;
+            border-radius: var(--radius-input);
+            margin-top: 10px;
+        }
+
+        .archive-checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+        }
+
+        .archive-checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .archive-checkbox-group label svg {
+            width: 16px;
+            height: 16px;
+            color: #EE4B2B;
         }
 
         /* GENERIC BUTTONS (ACTION BUTTONS ON CARDS) */
@@ -224,7 +284,6 @@
         }
 
         .edit-btn:hover { color: #555; }
-        .archive-btn:hover { color: #EE4B2B; } /* Warning color for archive */
 
         /* PRAYED COUNTER */
         .prayed-counter {
@@ -255,6 +314,44 @@
 
         /* UTILITY */
         .hidden { display: none; }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            header {
+                margin-bottom: 20px;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            #prayerCardsView {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 16px;
+                padding: 0 0 10px 0;
+                margin: 0 -20px;
+                padding-left: 20px;
+                scroll-behavior: smooth;
+            }
+
+            .prayer-card {
+                flex: 0 0 calc(100vw - 40px);
+                max-width: calc(100vw - 40px);
+                scroll-snap-align: start;
+                scroll-snap-stop: always;
+            }
+
+            .modal-content {
+                width: 90%;
+                max-width: 400px;
+            }
+        }
         
     </style>
 </head>
@@ -290,6 +387,14 @@
             <textarea id="pRequest" rows="4" placeholder="Your intention here..." required></textarea>
         </div>
 
+        <div class="archive-checkbox-group" id="archiveGroup" style="display: none;">
+            <input type="checkbox" id="pArchived">
+            <label for="pArchived">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                Archive this prayer request
+            </label>
+        </div>
+
         <div class="form-actions">
             <button class="cancel-btn" id="closeModal">Cancel</button>
             <button id="submitPrayerBtn" class="confirm-btn">Save</button> 
@@ -310,6 +415,8 @@
     const requestInput = document.getElementById('pRequest');
     const editIndexInput = document.getElementById('editIndex');
     const modalTitle = document.getElementById('modalTitle');
+    const archivedCheckbox = document.getElementById('pArchived');
+    const archiveGroup = document.getElementById('archiveGroup');
 
     // State (Temporary array held in memory, synced to JSONbin)
     let prayerRequests = [];
@@ -357,6 +464,7 @@
         const date = dateInput.value;
         const request = requestInput.value;
         const editIndex = editIndexInput.value;
+        const archived = archivedCheckbox.checked;
 
         if(!name || !request) {
             alert('Please fill out the name and request fields.');
@@ -367,7 +475,7 @@
             // UPDATE existing
             prayerRequests[editIndex] = { 
                 ...prayerRequests[editIndex], 
-                name, date, request 
+                name, date, request, archived
             };
         } else {
             // CREATE new
@@ -379,19 +487,11 @@
         renderCards();
     };
 
-    // 4. Updating Count and Archiving
+    // 4. Updating Count
     const increasePrayedCount = async (index) => {
         prayerRequests[index].count += 1;
         await persistToJSONbin();
         renderCards(); // Re-render to show updated count and highlight state
-    }
-
-    const archivePrayer = async (index) => {
-        if (confirm("Are you sure you want to archive this prayer request? It will be hidden from the main board.")) {
-            prayerRequests[index].archived = true;
-            await persistToJSONbin();
-            renderCards();
-        }
     }
 
     // --- UI RENDERING FUNCTIONS ---
@@ -399,12 +499,23 @@
     const renderCards = () => {
         viewArea.innerHTML = ''; // Clear grid
 
-        // Filter and display only non-archived cards
+        // Create array of non-archived cards with their original indices
+        const cardsToDisplay = [];
         prayerRequests.forEach((prayer, index) => {
             if(!prayer.archived) {
-                const card = createCardMarkup(prayer, index);
-                viewArea.appendChild(card);
+                cardsToDisplay.push({ prayer, index });
             }
+        });
+
+        // Sort by date descending (newest first)
+        cardsToDisplay.sort((a, b) => {
+            return new Date(b.prayer.date) - new Date(a.prayer.date);
+        });
+
+        // Render cards in sorted order
+        cardsToDisplay.forEach(({ prayer, index }) => {
+            const card = createCardMarkup(prayer, index);
+            viewArea.appendChild(card);
         });
     }
 
@@ -435,9 +546,6 @@
                     <button class="icon-btn edit-btn" onclick="openEdit(${index})">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     </button>
-                    <button class="icon-btn archive-btn" onclick="archivePrayer(${index})">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
-                    </button>
                 </div>
             </div>
         `;
@@ -458,6 +566,8 @@
             modalTitle.innerText = "New Prayer Request";
             submitBtn.innerText = "Save";
             editIndexInput.value = ''; // Clear edit index
+            archiveGroup.style.display = 'none'; // Hide archive option for new prayers
+            archivedCheckbox.checked = false;
         }
     };
 
@@ -467,6 +577,7 @@
         nameInput.value = '';
         requestInput.value = '';
         editIndexInput.value = '';
+        archivedCheckbox.checked = false;
     };
 
     // Open Edit mode
@@ -480,7 +591,9 @@
         dateInput.value = prayer.date;
         requestInput.value = prayer.request;
         editIndexInput.value = index;
+        archivedCheckbox.checked = prayer.archived || false;
 
+        archiveGroup.style.display = 'flex'; // Show archive option in edit mode
         openModal(true);
     };
 
