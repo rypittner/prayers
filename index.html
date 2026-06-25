@@ -32,20 +32,21 @@
             font-family: var(--body-font);
             display: flex;
             justify-content: center;
+            height: 100vh;
         }
 
         .container {
             width: 100%;
             max-width: 1000px;
             padding: 30px;
+            display: flex;
+            flex-direction: column;
         }
 
         /* HEADER SECTION */
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         header h1 {
@@ -53,6 +54,14 @@
             color: var(--primary-accent);
             font-size: 2.8em;
             margin: 0;
+        }
+
+        header hr {
+            width: auto;
+            border: 0;
+            border-top: 2px solid var(--primary-accent);
+            margin: 10px auto;
+            opacity:0.2;
         }
 
         /* MAIN ACTION BUTTON (Floating Style) */
@@ -70,7 +79,10 @@
             transition: background var(--transition-speed), transform 0.2s;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            margin: 20px auto;
+            width: fit-content;
         }
 
         #addPrayerBtn:hover {
@@ -87,13 +99,15 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
         }
 
         /* PRAYER REQUEST CARDS */
         .prayer-card {
             background-color: var(--card-bg);
             border-radius: var(--radius-main);
-            padding: 20px;
+            padding: 30px;
             box-shadow: var(--shadow-subtle);
             position: relative;
             display: flex;
@@ -297,6 +311,8 @@
             cursor: pointer;
             transition: color 0.2s, background 0.2s, border-color 0.2s;
         }
+        
+
 
         .prayed-counter:hover {
             color: #666;
@@ -318,38 +334,31 @@
         /* MOBILE RESPONSIVE */
         @media (max-width: 768px) {
             .container {
-                padding: 20px;
-            }
-
-            header {
-                margin-bottom: 20px;
-            }
-
-            header h1 {
-                font-size: 2em;
+                padding: 40px;
             }
 
             #prayerCardsView {
                 display: flex;
                 overflow-x: auto;
+                overflow-y: hidden;
                 scroll-snap-type: x mandatory;
-                gap: 16px;
-                padding: 0 0 10px 0;
-                margin: 0 -20px;
-                padding-left: 20px;
-                scroll-behavior: smooth;
+                gap: 30px;
+                padding: 20px;
+                margin: 0;
+            }
+
+            /* Hide scrollbar */
+            #prayerCardsView::-webkit-scrollbar {
+                display: none;
+            }
+            #prayerCardsView {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
             }
 
             .prayer-card {
-                flex: 0 0 calc(100vw - 40px);
-                max-width: calc(100vw - 40px);
-                scroll-snap-align: start;
-                scroll-snap-stop: always;
-            }
-
-            .modal-content {
-                width: 90%;
-                max-width: 400px;
+                flex: 0 0 85vw;
+                scroll-snap-align: center;
             }
         }
         
@@ -360,10 +369,12 @@
 <div class="container">
     <header>
         <h1>Prayer Intentions</h1>
-        <button id="addPrayerBtn">+ <span>New</span></button>
+        <hr>
     </header>
 
     <div id="prayerCardsView"></div>
+
+    <button id="addPrayerBtn">+ <span>New</span></button>
 </div>
 
 <div id="prayerModal" class="modal">
