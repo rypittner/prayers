@@ -107,24 +107,22 @@
             padding-bottom: 100px; /* Allows the last row to 'bleed' past the bottom */
         }
 
-            /* Hide scrollbar on desktop */
-#prayerCardsView::-webkit-scrollbar {
-    display: none;
-}
-#prayerCardsView {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
+        #prayerCardsView::-webkit-scrollbar {
+            display: none;
+        }
+        #prayerCardsView {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 
-            /* Fix button to the bottom center */
-#addPrayerBtn {
-    position: fixed;
-    bottom: 30px;
-    margin: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-}
+        #addPrayerBtn {
+            position: fixed;
+            bottom: 30px;
+            margin: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
 
         /* PRAYER REQUEST CARDS */
         .prayer-card {
@@ -136,11 +134,10 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 350px; /* Standardized height */
+            height: 350px; 
             min-width: 0; 
             width: 100%;
             box-sizing: border-box;
-            /* Added for FLIP animation */
             transition: transform 0s, opacity 0s;
         }
 
@@ -149,8 +146,8 @@
         }
 
         .card-name {
-        opacity:0.8;
-        font-family:Yrsa, serif;
+            opacity:0.8;
+            font-family:Yrsa, serif;
             font-weight: 600;
             font-size: 2em;
             line-height:1;
@@ -173,15 +170,11 @@
             line-height: 1.4;
             margin-bottom: 15px;
             flex-grow: 1; 
-            overflow-y: auto; /* Enable scroll if text overflows */
+            overflow-y: auto;
             overflow-x: hidden;
-            &::-webkit-scrollbar {
-        display: none;
-        
-    }
+            &::-webkit-scrollbar { display: none; }
         }
 
-        /* ACTION AREA */
         .card-actions {
             display: flex;
             justify-content: space-between;
@@ -190,9 +183,8 @@
             padding-top: 10px;
         }
 
-        /* MODAL (OVERLAY AND FORM) */
         .modal {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             z-index: 1000;
             left: 0;
@@ -223,7 +215,6 @@
             margin: 0;
         }
 
-        /* MODAL FORM STYLING */
         .input-group {
             display: flex;
             flex-direction: column;
@@ -268,9 +259,7 @@
             transition: color var(--transition-speed);
         }
 
-        .cancel-btn:hover {
-            color: #555;
-        }
+        .cancel-btn:hover { color: #555; }
 
         .confirm-btn {
             background-color: var(--primary-accent);
@@ -285,9 +274,7 @@
             transition: background var(--transition-speed);
         }
 
-        .confirm-btn:hover {
-            background-color: #6A8790;
-        }
+        .confirm-btn:hover { background-color: #6A8790; }
 
         .archive-checkbox-group {
             display: flex;
@@ -299,44 +286,13 @@
             margin-top: 10px;
         }
 
-        .archive-checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            margin: 0;
-            padding: 0;
-        }
+        .archive-checkbox-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin: 0; padding: 0; }
+        .archive-checkbox-group label { margin: 0; cursor: pointer; display: flex; align-items: center; gap: 8px; flex: 1; }
+        .archive-checkbox-group label svg { width: 16px; height: 16px; color: #EE4B2B; }
 
-        .archive-checkbox-group label {
-            margin: 0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-        }
-
-        .archive-checkbox-group label svg {
-            width: 16px;
-            height: 16px;
-            color: #EE4B2B;
-        }
-
-        /* GENERIC BUTTONS (ACTION BUTTONS ON CARDS) */
-        .icon-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #888888;
-            transition: color var(--transition-speed);
-            padding: 5px;
-            display: flex;
-            align-items: center;
-        }
-
+        .icon-btn { background: none; border: none; cursor: pointer; color: #888888; transition: color var(--transition-speed); padding: 5px; display: flex; align-items: center; }
         .edit-btn:hover { color: #555; }
 
-        /* PRAYED COUNTER */
         .prayed-counter {
             display: flex;
             align-items: center;
@@ -349,49 +305,29 @@
             transition: color 0.2s, background 0.2s, border-color 0.2s;
         }
         
-        /* UTILITY */
         .hidden { display: none; }
 
         /* MOBILE RESPONSIVE */
         @media (max-width: 768px) {
-            .container {
-                padding: 0;
-                height: 100vh;
-                justify-content: center;
-            }
-            header { padding-top: 20px; }
-
+            .container { padding: 20px 0; height: 90%; }
             #prayerCardsView {
                 display: flex;
-                flex-direction: row;
                 overflow-x: auto;
-                overflow-y: hidden;
                 scroll-snap-type: x mandatory;
-                align-items: center;
                 gap: 0;
-                padding: 0 7vw;
+                padding: 0 7%;
                 margin: 0;
-                height: 100%;
-                flex-grow:0;
+                flex-grow: 1;
+                align-items: center; /* Vertically center */
+                -webkit-overflow-scrolling: touch;
             }
-
             .prayer-card {
-                flex: 0 0 86vw; /* 100vw - 7vw - 7vw = 86vw */
+                flex: 0 0 86%; /* 100% - 7% - 7% = 86% card width */
                 scroll-snap-align: center;
-                margin: 0;
-                height: 60vh;
-                margin-right: 14vw; /* Adds gap between snap points */
+                margin: 0 7%;
+                height: 70%;
             }
-            
-            .card-body {
-                font-size: 2em;
-                font-weight:400;
-                color: #555;
-                opacity:0.6;
-                line-height: 1.2;
-                margin-bottom: 15px;
-                overflow-y: auto;
-            }
+            .card-body { font-size: 1.8em; font-weight:400; color: #555; opacity:0.6; line-height: 1.2; margin-bottom: 15px; }
         }
     </style>
 </head>
@@ -503,18 +439,16 @@
         const isMobile = window.innerWidth <= 768;
 
         if (isMobile) {
-            // Logic: Animate upward, fade out, then shift next card
-            cardElement.style.transition = 'transform 0.5s ease-in, opacity 0.5s ease-in';
-            cardElement.style.transform = 'translateY(-100vh)';
+            // Mobile: Animate out, then refresh
+            cardElement.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
+            cardElement.style.transform = 'translateY(-100%)';
             cardElement.style.opacity = '0';
             
-            // Slide container to trigger next card
-            viewArea.style.transition = 'scroll-left 0.5s ease-out';
+            await persistToJSONbin();
             
-            setTimeout(async () => {
-                await persistToJSONbin();
+            setTimeout(() => {
                 renderCards();
-            }, 500);
+            }, 400);
         } else {
             const firstPositions = capturePositions();
             renderCards(true);
@@ -576,8 +510,8 @@
         
         const prayedItems = prayerRequests.filter(p => p.lastPrayed && !p.archived);
         const times = prayedItems.map(p => new Date(p.lastPrayed).getTime());
-        const minTime = Math.min(...times);
-        const maxTime = Math.max(...times);
+        const minTime = times.length > 0 ? Math.min(...times) : 0;
+        const maxTime = times.length > 0 ? Math.max(...times) : 0;
 
         const sorted = prayerRequests
             .map((p, i) => ({ ...p, originalIndex: i, id: `card-${i}` }))
