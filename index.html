@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> MP Prayer Itentions</title>
+    <title> MP Prayer Intentions</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -48,7 +48,6 @@
 
         /* HEADER SECTION */
         header {
-            padding:10px;
             text-align: center;
             background: var(--bg-color);
         }
@@ -471,31 +470,27 @@
     const archivedCheckbox = document.getElementById('pArchived');
     const archiveGroup = document.getElementById('archiveGroup');
 
-    // State (Temporary array held in memory, synced to JSONbin)
     let prayerRequests = [];
 
-    // --- CONFIGURATION (REPLACE KEYS HERE) ---
+    // --- CONFIGURATION ---
     const BIN_ID = "6a386bb8f5f4af5e291a1c9e";
     const MASTER_KEY = "$2a$10$uWA6RwV4hxUT6D49HU56VuPjVsoNcHcTmf.jSgx.o6RXd2G1wGyse"; 
     const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-    // --- DATABASE (JSONbin.io Implementation) ---
-
-    // 1. Fetching Data (GET Request)
+    // --- DATABASE ---
     const loadPrayers = async () => {
         try {
             const response = await fetch(BASE_URL, {
                 headers: { "X-Master-Key": MASTER_KEY }
             });
             const result = await response.json();
-            prayerRequests = result.record || []; // JSONbin stores data in a 'record' field
+            prayerRequests = result.record || []; 
             renderCards();
         } catch (err) {
             console.error("Error loading data from JSONbin:", err);
         }
     };
 
-    // 2. Saving Data (Helper to push current state back to JSONbin)
     const persistToJSONbin = async () => {
         try {
             await fetch(BASE_URL, {
@@ -511,7 +506,6 @@
         }
     };
 
-    // 3. Save or Update a Prayer
     const savePrayer = async () => {
         const name = nameInput.value;
         const date = dateInput.value;
@@ -525,14 +519,12 @@
         }
 
         if (editIndex !== '') {
-            // UPDATE existing
             prayerRequests[editIndex] = { 
                 ...prayerRequests[editIndex], 
                 name, date, request, archived
             };
         } else {
-            // CREATE new
-            prayerRequests.push({ name, date, request, count: 0, archived: false });
+            prayerRequests.push({ name, date, request, lastPrayed: null, archived: false });
         }
 
         await persistToJSONbin();
@@ -540,34 +532,45 @@
         renderCards();
     };
 
-    // 4. Updating Count
-    const increasePrayedCount = async (index) => {
-        prayerRequests[index].count += 1;
+    const markPrayed = async (index) => {
+        prayerRequests[index].lastPrayed = new Date().toISOString();
         await persistToJSONbin();
-        renderCards(); // Re-render to show updated count and highlight state
+        renderCards();
     }
 
-    // --- UI RENDERING FUNCTIONS ---
+    // --- UI RENDERING ---
+
+    const getRelativeTime = (timestamp) => {
+        if (!timestamp) return "PRAY NOW";
+        const now = new Date();
+        const diff = now - new Date(timestamp);
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+
+        if (minutes < 1) return "JUST NOW";
+        if (minutes < 60) return `${minutes} MIN AGO`;
+        if (hours < 24) return hours === 1 ? "1 HR AGO" : `${hours} HRS AGO`;
+        if (days === 0) return "TODAY";
+        return days === 1 ? "1 DAY AGO" : `${days} DAYS AGO`;
+    };
 
     const renderCards = () => {
-        viewArea.innerHTML = ''; // Clear grid
+        viewArea.innerHTML = ''; 
 
-        // Create array of non-archived cards with their original indices
-        const cardsToDisplay = [];
-        prayerRequests.forEach((prayer, index) => {
-            if(!prayer.archived) {
-                cardsToDisplay.push({ prayer, index });
-            }
-        });
+        // Sorting: Never prayed first, then by oldest lastPrayed (most time passed)
+        const sorted = prayerRequests
+            .map((p, i) => ({ ...p, originalIndex: i }))
+            .filter(p => !p.archived)
+            .sort((a, b) => {
+                if (!a.lastPrayed && !b.lastPrayed) return 0;
+                if (!a.lastPrayed) return -1;
+                if (!b.lastPrayed) return 1;
+                return new Date(a.lastPrayed) - new Date(b.lastPrayed);
+            });
 
-        // Sort by date descending (newest first)
-        cardsToDisplay.sort((a, b) => {
-            return new Date(b.prayer.date) - new Date(a.prayer.date);
-        });
-
-        // Render cards in sorted order
-        cardsToDisplay.forEach(({ prayer, index }) => {
-            const card = createCardMarkup(prayer, index);
+        sorted.forEach((item) => {
+            const card = createCardMarkup(item, item.originalIndex);
             viewArea.appendChild(card);
         });
     }
@@ -575,26 +578,23 @@
     const createCardMarkup = (prayer, index) => {
         const card = document.createElement('div');
         card.classList.add('prayer-card');
-
+        
+        const timeLabel = getRelativeTime(prayer.lastPrayed);
+        const isToday = timeLabel === "TODAY" || timeLabel === "JUST NOW" || (prayer.lastPrayed && new Date(prayer.lastPrayed).toDateString() === new Date().toDateString());
+        
         card.innerHTML = `
             <div class="card-header">
                 <div class="card-name">${escapeHtml(prayer.name)}</div>
             </div>
-            
             <div class="card-body">
                 ${escapeHtml(prayer.request)}
-                
             </div>
-            
-                                            <div class="card-date">${formatDate(prayer.date)}</div>
-            
+            <div class="card-date">${formatDate(prayer.date)}</div>
             <div class="card-actions">
-                <div class="prayed-counter ${prayer.count > 0 ? 'active' : ''}" onclick="increasePrayedCount(${index})">
+                <div class="prayed-counter ${isToday ? 'active' : ''}" onclick="markPrayed(${index})">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"></path></svg>
-                    <span id="counter-${index}">${prayer.count}</span>
+                    <span>${timeLabel}</span>
                 </div>
-
-                
                 <div>
                     <button class="icon-btn edit-btn" onclick="openEdit(${index})">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -605,52 +605,39 @@
         return card;
     }
 
-    // --- MODAL & FORM FUNCTIONS ---
-
-    const setToday = () => {
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.value = today;
-    }
-
     const openModal = (editing = false) => {
         modal.style.display = 'flex';
-        setToday(); // Default to today, but calendar is available
         if(!editing) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
             modalTitle.innerText = "New Prayer Request";
             submitBtn.innerText = "Save";
-            editIndexInput.value = ''; // Clear edit index
-            archiveGroup.style.display = 'none'; // Hide archive option for new prayers
+            editIndexInput.value = ''; 
+            archiveGroup.style.display = 'none'; 
             archivedCheckbox.checked = false;
         }
     };
 
     const closeModal = () => {
         modal.style.display = 'none';
-        // Clear fields on close
         nameInput.value = '';
         requestInput.value = '';
         editIndexInput.value = '';
         archivedCheckbox.checked = false;
     };
 
-    // Open Edit mode
     const openEdit = (index) => {
         const prayer = prayerRequests[index];
         modalTitle.innerText = "Edit Prayer Request";
         submitBtn.innerText = "Update";
-
-        // Pre-fill inputs
         nameInput.value = prayer.name;
         dateInput.value = prayer.date;
         requestInput.value = prayer.request;
         editIndexInput.value = index;
         archivedCheckbox.checked = prayer.archived || false;
-
-        archiveGroup.style.display = 'flex'; // Show archive option in edit mode
+        archiveGroup.style.display = 'flex'; 
         openModal(true);
     };
-
-    // --- UTILITY FORMATTING ---
 
     const formatDate = (dateStr) => {
         if(!dateStr) return "";
@@ -658,32 +645,19 @@
         return new Date(dateStr).toLocaleDateString(undefined, options);
     }
 
-    // Sanitize user inputs
     const escapeHtml = (unsafe) => {
-        return unsafe
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
+        return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // --- EVENTS ---
     openBtn.onclick = () => openModal();
-    closeBtn.onclick = (e) => { e.preventDefault(); closeModal(); }; // Avoid form trigger
-    submitBtn.onclick = (e) => { e.preventDefault(); savePrayer(); }; // Manual save logic
+    closeBtn.onclick = (e) => { e.preventDefault(); closeModal(); }; 
+    submitBtn.onclick = (e) => { e.preventDefault(); savePrayer(); }; 
 
-    // Close modal if overlay is clicked
     window.onclick = function(event) {
-        if (event.target == modal) {
-            closeModal();
-        }
+        if (event.target == modal) closeModal();
     }
 
-    // --- INITIALIZATION ---
     loadPrayers();
-
 </script>
-
 </body>
 </html>
