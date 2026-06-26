@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-    
         /* CSS VARIABLES FOR MODERN, LIGHT THEME */
         :root {
             --bg-color: #EEECE9; /* Cream / Off White */
@@ -141,6 +140,8 @@
             min-width: 0; 
             width: 100%;
             box-sizing: border-box;
+            /* Added for FLIP animation */
+            transition: transform 0s, opacity 0s;
         }
 
         .card-header {
@@ -348,11 +349,12 @@
             transition: color 0.2s, background 0.2s, border-color 0.2s;
         }
         
-        .prayed-counter:hover {
+        /* Removed original hover style to allow dynamic styles */
+        /* .prayed-counter:hover {
             color: #666;
             background-color: #FDFBEE;
             border-color: #E0E0E0;
-        }
+        } */
 
         /* UTILITY */
         .hidden { display: none; }
@@ -505,10 +507,83 @@
         renderCards();
     };
 
-    const markPrayed = async (index) => {
+    const markPrayed = async (index, cardElement) => {
         prayerRequests[index].lastPrayed = new Date().toISOString();
+        
+        // FLIP: Capture current state (First)
+        const firstPositions = capturePositions();
+
+        // Data Update & Render (Last)
+        renderCards(true); // render without animation first
+
+        // FLIP: Capture new state and animate (Last, Inverse, Play)
+        flipAnimate(firstPositions);
+        
         await persistToJSONbin();
-        renderCards();
+    }
+
+    const capturePositions = () => {
+        const positions = {};
+        viewArea.querySelectorAll('.prayer-card').forEach(card => {
+            const id = card.dataset.id;
+            const rect = card.getBoundingClientRect();
+            positions[id] = {
+                rect: rect,
+                scrollLeft: viewArea.scrollLeft
+            };
+        });
+        return positions;
+    }
+
+    const flipAnimate = (firstPositions) => {
+        const isMobile = window.innerWidth <= 768;
+        const lastCards = viewArea.querySelectorAll('.prayer-card');
+        
+        let animationsRunning = 0;
+
+        lastCards.forEach(card => {
+            const id = card.dataset.id;
+            const firstState = firstPositions[id];
+            if (!firstState) return; // New card or one not in original view
+
+            const firstRect = firstState.rect;
+            const lastRect = card.getBoundingClientRect();
+
+            // Check if card is/was in view on mobile
+            if (isMobile) {
+                const viewWidth = window.innerWidth;
+                const wasInView = firstRect.right > 0 && firstRect.left < viewWidth;
+                const isInView = lastRect.right > 0 && lastRect.left < viewWidth;
+                if (!wasInView && !isInView) return; // Optimization: Skip cards fully out of view
+            }
+
+            const deltaX = firstRect.left - lastRect.left;
+            const deltaY = firstRect.top - lastRect.top;
+
+            if (deltaX === 0 && deltaY === 0) return; // No movement
+
+            // Inverse
+            card.style.transition = 'transform 0s, opacity 0s';
+            card.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            
+            // Force reflow
+            card.getBoundingClientRect();
+
+            // Play
+            animationsRunning++;
+            card.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
+            card.style.transform = '';
+
+            const onEnd = () => {
+                card.style.transition = '';
+                animationsRunning--;
+                if (animationsRunning === 0) {
+                    // All animations done
+                }
+                card.removeEventListener('transitionend', onEnd);
+            };
+            card.addEventListener('transitionend', onEnd);
+        });
     }
 
     const getRelativeTime = (timestamp) => {
@@ -526,7 +601,12 @@
         return days === 1 ? "1 DAY AGO" : `${days} DAYS AGO`;
     };
 
-    const renderCards = () => {
+    const renderCards = (skipFlipCapture = false) => {
+        let firstPositions = {};
+        if (!skipFlipCapture) {
+            firstPositions = capturePositions();
+        }
+        
         viewArea.innerHTML = ''; 
         const now = new Date();
         
@@ -537,33 +617,52 @@
         const maxTime = Math.max(...times);
 
         const sorted = prayerRequests
-            .map((p, i) => ({ ...p, originalIndex: i }))
+            .map((p, i) => ({ ...p, originalIndex: i, id: `card-${i}` }))
             .filter(p => !p.archived)
             .sort((a, b) => {
                 if (!a.lastPrayed && !b.lastPrayed) return 0;
                 if (!a.lastPrayed) return -1;
                 if (!b.lastPrayed) return 1;
+                // Newest last
                 return new Date(a.lastPrayed) - new Date(b.lastPrayed);
             });
 
         sorted.forEach((item) => {
             let opacity = 0;
+            let counterTextColor = '#888888';
             if (item.lastPrayed) {
                 const time = new Date(item.lastPrayed).getTime();
-                // Range 0.2 to 1.0 based on recency
-                if (maxTime === minTime) opacity = 1;
-                else opacity = 0.2 + (0.8 * ((time - minTime) / (maxTime - minTime)));
+                // Range 0.2 to 1.0 based on recency (maxTime is newest, so largest opacity)
+                if (maxTime === minTime) {
+                    opacity = 1;
+                    counterTextColor = 'white';
+                } else {
+                    opacity = 0.2 + (0.8 * ((time - minTime) / (maxTime - minTime)));
+                    // Dynamic text color for readability: white when background is dark gold, gold when background is faint
+                    counterTextColor = opacity < 0.5 ? 'var(--secondary-accent)' : 'white';
+                }
             }
             
-            const card = createCardMarkup(item, item.originalIndex, opacity);
+            const card = createCardMarkup(item, item.originalIndex, opacity, counterTextColor);
             viewArea.appendChild(card);
         });
+
+        if (!skipFlipCapture) {
+            flipAnimate(firstPositions);
+        }
     }
 
-    const createCardMarkup = (prayer, index, opacity) => {
+    const createCardMarkup = (prayer, index, opacity, counterTextColor) => {
         const card = document.createElement('div');
         card.classList.add('prayer-card');
+        card.dataset.id = prayer.id; // FLIP ID
         const timeLabel = getRelativeTime(prayer.lastPrayed);
+        
+        const isNeverPrayed = !prayer.lastPrayed;
+        
+        const counterBgColor = isNeverPrayed ? 'transparent' : `rgba(202, 172, 92, ${opacity})`;
+        const counterBorderColor = isNeverPrayed ? '#EEEEEE' : `rgba(202, 172, 92, ${opacity})`;
+        const finalTextColor = isNeverPrayed ? '#888888' : counterTextColor;
         
         card.innerHTML = `
             <div class="card-header">
@@ -574,7 +673,7 @@
             </div>
             <div class="card-date">${formatDate(prayer.date)}</div>
             <div class="card-actions">
-                <div class="prayed-counter" onclick="markPrayed(${index})" style="background-color: ${prayer.lastPrayed ? `rgba(202, 172, 92, ${opacity})` : 'transparent'}; border-color: ${prayer.lastPrayed ? `rgba(202, 172, 92, ${opacity})` : '#EEEEEE'}; color: ${prayer.lastPrayed ? 'white' : '#888888'}">
+                <div class="prayed-counter" onclick="markPrayed(${index}, this.closest('.prayer-card'))" style="background-color: ${counterBgColor}; border-color: ${counterBorderColor}; color: ${finalTextColor}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"></path></svg>
                     <span>${timeLabel}</span>
                 </div>
