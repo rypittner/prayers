@@ -103,9 +103,9 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
-            flex-grow: 0;
+            flex-grow: 1;
             overflow-y: auto; /* Cards will scroll independently */
-    padding-bottom: 100px; /* Allows the last row to 'bleed' past the bottom */
+            padding-bottom: 100px; /* Allows the last row to 'bleed' past the bottom */
         }
 
             /* Hide scrollbar on desktop */
@@ -137,6 +137,10 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            height: 350px; /* Standardized height */
+            min-width: 0; 
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .card-header {
@@ -167,7 +171,13 @@
             opacity:0.8;
             line-height: 1.4;
             margin-bottom: 15px;
-            flex-grow: 1; /* Pushes action area to the bottom */
+            flex-grow: 1; 
+            overflow-y: auto; /* Enable scroll if text overflows */
+            overflow-x: hidden;
+            &::-webkit-scrollbar {
+        display: none;
+        
+    }
         }
 
         /* ACTION AREA */
@@ -338,20 +348,10 @@
             transition: color 0.2s, background 0.2s, border-color 0.2s;
         }
         
-
-
         .prayed-counter:hover {
             color: #666;
-            background-color: #FDFBEE; /* very light gold highlight */
+            background-color: #FDFBEE;
             border-color: #E0E0E0;
-        }
-
-        /* Highlight style when clicked once */
-        .prayed-counter.active {
-            border-color: var(--secondary-accent);
-            background-color: var(--secondary-accent);
-            color: white;
-            font-weight: 600;
         }
 
         /* UTILITY */
@@ -361,7 +361,7 @@
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
-                            height: 80%;
+                height: 90%;
             }
 
             #prayerCardsView {
@@ -375,7 +375,6 @@
                 flex-grow:1;
             }
 
-            /* Hide scrollbar */
             #prayerCardsView::-webkit-scrollbar {
                 display: none;
             }
@@ -385,24 +384,22 @@
             }
             
             .card-body {
-            font-size: 2em;
-            font-weight:400;
-            color: #555;
-            opacity:0.6;
-            line-height: 1.2;
-            margin-bottom: 15px;
-            flex-grow: 1; /* Pushes action area to the bottom */
-        }
+                font-size: 2em;
+                font-weight:400;
+                color: #555;
+                opacity:0.6;
+                line-height: 1.2;
+                margin-bottom: 15px;
+                overflow-y: auto; /* Ensure scrollability on mobile */
+            }
 
             .prayer-card {
                 flex: 0 0 75vw;
                 scroll-snap-align: center;
                 margin: 0 10px;
+                height: 80%;
             }
-            
-            
         }
-        
     </style>
 </head>
 <body>
@@ -421,24 +418,19 @@
 <div id="prayerModal" class="modal">
     <div class="modal-content">
         <h2 id="modalTitle">New Prayer Request</h2>
-        
         <input type="hidden" id="editIndex"> 
-        
         <div class="input-group">
             <label for="pName">Requester Name</label>
             <input type="text" id="pName" placeholder="Name or Initials" required>
         </div>
-
         <div class="input-group">
             <label for="pDate">Date</label>
             <input type="date" id="pDate" required>
         </div>
-
         <div class="input-group">
             <label for="pRequest">Prayer Request</label>
             <textarea id="pRequest" rows="4" placeholder="Your intention here..." required></textarea>
         </div>
-
         <div class="archive-checkbox-group" id="archiveGroup" style="display: none;">
             <input type="checkbox" id="pArchived">
             <label for="pArchived">
@@ -446,7 +438,6 @@
                 Archive this prayer request
             </label>
         </div>
-
         <div class="form-actions">
             <button class="cancel-btn" id="closeModal">Cancel</button>
             <button id="submitPrayerBtn" class="confirm-btn">Save</button> 
@@ -455,7 +446,6 @@
 </div>
 
 <script>
-    // DEFINE STATE AND SELECTORS
     const modal = document.getElementById('prayerModal');
     const openBtn = document.getElementById('addPrayerBtn');
     const closeBtn = document.getElementById('closeModal');
@@ -472,38 +462,27 @@
 
     let prayerRequests = [];
 
-    // --- CONFIGURATION ---
     const BIN_ID = "6a386bb8f5f4af5e291a1c9e";
     const MASTER_KEY = "$2a$10$uWA6RwV4hxUT6D49HU56VuPjVsoNcHcTmf.jSgx.o6RXd2G1wGyse"; 
     const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-    // --- DATABASE ---
     const loadPrayers = async () => {
         try {
-            const response = await fetch(BASE_URL, {
-                headers: { "X-Master-Key": MASTER_KEY }
-            });
+            const response = await fetch(BASE_URL, { headers: { "X-Master-Key": MASTER_KEY } });
             const result = await response.json();
             prayerRequests = result.record || []; 
             renderCards();
-        } catch (err) {
-            console.error("Error loading data from JSONbin:", err);
-        }
+        } catch (err) { console.error("Error loading data:", err); }
     };
 
     const persistToJSONbin = async () => {
         try {
             await fetch(BASE_URL, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Master-Key": MASTER_KEY
-                },
+                headers: { "Content-Type": "application/json", "X-Master-Key": MASTER_KEY },
                 body: JSON.stringify(prayerRequests)
             });
-        } catch (err) {
-            console.error("Error saving data to JSONbin:", err);
-        }
+        } catch (err) { console.error("Error saving data:", err); }
     };
 
     const savePrayer = async () => {
@@ -513,16 +492,10 @@
         const editIndex = editIndexInput.value;
         const archived = archivedCheckbox.checked;
 
-        if(!name || !request) {
-            alert('Please fill out the name and request fields.');
-            return;
-        }
+        if(!name || !request) { alert('Please fill out the name and request fields.'); return; }
 
         if (editIndex !== '') {
-            prayerRequests[editIndex] = { 
-                ...prayerRequests[editIndex], 
-                name, date, request, archived
-            };
+            prayerRequests[editIndex] = { ...prayerRequests[editIndex], name, date, request, archived };
         } else {
             prayerRequests.push({ name, date, request, lastPrayed: null, archived: false });
         }
@@ -537,8 +510,6 @@
         await persistToJSONbin();
         renderCards();
     }
-
-    // --- UI RENDERING ---
 
     const getRelativeTime = (timestamp) => {
         if (!timestamp) return "PRAY NOW";
@@ -557,8 +528,14 @@
 
     const renderCards = () => {
         viewArea.innerHTML = ''; 
+        const now = new Date();
+        
+        // Find min/max for gradient scale
+        const prayedItems = prayerRequests.filter(p => p.lastPrayed);
+        const times = prayedItems.map(p => new Date(p.lastPrayed).getTime());
+        const minTime = Math.min(...times);
+        const maxTime = Math.max(...times);
 
-        // Sorting: Never prayed first, then by oldest lastPrayed (most time passed)
         const sorted = prayerRequests
             .map((p, i) => ({ ...p, originalIndex: i }))
             .filter(p => !p.archived)
@@ -570,17 +547,23 @@
             });
 
         sorted.forEach((item) => {
-            const card = createCardMarkup(item, item.originalIndex);
+            let opacity = 0;
+            if (item.lastPrayed) {
+                const time = new Date(item.lastPrayed).getTime();
+                // Range 0.2 to 1.0 based on recency
+                if (maxTime === minTime) opacity = 1;
+                else opacity = 0.2 + (0.8 * ((time - minTime) / (maxTime - minTime)));
+            }
+            
+            const card = createCardMarkup(item, item.originalIndex, opacity);
             viewArea.appendChild(card);
         });
     }
 
-    const createCardMarkup = (prayer, index) => {
+    const createCardMarkup = (prayer, index, opacity) => {
         const card = document.createElement('div');
         card.classList.add('prayer-card');
-        
         const timeLabel = getRelativeTime(prayer.lastPrayed);
-        const isToday = timeLabel === "TODAY" || timeLabel === "JUST NOW" || (prayer.lastPrayed && new Date(prayer.lastPrayed).toDateString() === new Date().toDateString());
         
         card.innerHTML = `
             <div class="card-header">
@@ -591,15 +574,13 @@
             </div>
             <div class="card-date">${formatDate(prayer.date)}</div>
             <div class="card-actions">
-                <div class="prayed-counter ${isToday ? 'active' : ''}" onclick="markPrayed(${index})">
+                <div class="prayed-counter" onclick="markPrayed(${index})" style="background-color: ${prayer.lastPrayed ? `rgba(202, 172, 92, ${opacity})` : 'transparent'}; border-color: ${prayer.lastPrayed ? `rgba(202, 172, 92, ${opacity})` : '#EEEEEE'}; color: ${prayer.lastPrayed ? 'white' : '#888888'}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"></path></svg>
                     <span>${timeLabel}</span>
                 </div>
-                <div>
-                    <button class="icon-btn edit-btn" onclick="openEdit(${index})">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    </button>
-                </div>
+                <button class="icon-btn edit-btn" onclick="openEdit(${index})">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
             </div>
         `;
         return card;
@@ -608,13 +589,11 @@
     const openModal = (editing = false) => {
         modal.style.display = 'flex';
         if(!editing) {
-            const today = new Date().toISOString().split('T')[0];
-            dateInput.value = today;
+            dateInput.value = new Date().toISOString().split('T')[0];
             modalTitle.innerText = "New Prayer Request";
             submitBtn.innerText = "Save";
             editIndexInput.value = ''; 
             archiveGroup.style.display = 'none'; 
-            archivedCheckbox.checked = false;
         }
     };
 
@@ -641,21 +620,15 @@
 
     const formatDate = (dateStr) => {
         if(!dateStr) return "";
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(dateStr).toLocaleDateString(undefined, options);
+        return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-    const escapeHtml = (unsafe) => {
-        return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
+    const escapeHtml = (unsafe) => unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 
     openBtn.onclick = () => openModal();
     closeBtn.onclick = (e) => { e.preventDefault(); closeModal(); }; 
     submitBtn.onclick = (e) => { e.preventDefault(); savePrayer(); }; 
-
-    window.onclick = function(event) {
-        if (event.target == modal) closeModal();
-    }
+    window.onclick = (event) => { if (event.target == modal) closeModal(); };
 
     loadPrayers();
 </script>
