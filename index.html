@@ -33,38 +33,46 @@
             display: flex;
             justify-content: center;
             height: 100vh;
-            overflow:hidden;
+            overflow: hidden; /* Prevent body scroll */
         }
 
         .container {
             width: 100%;
             max-width: 1000px;
-            padding: 30px;
+            padding: 0 30px;
             display: flex;
-            height: 100%;
+            height: 100vh;
             flex-direction: column;
         }
 
         /* HEADER SECTION */
         header {
-            text-align: center;
             background: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 200;
         }
 
+
         header h1 {
+        padding:20px;
             font-family: var(--body-font:);
             color: var(--primary-accent);
             text-transform:uppercase;
             font-size: 1em;
+            line-spacing:0;
             letter-spacing:1px;
             margin: 0;
         }
 
         header hr {
-            width: 90%;
+            width: 100%;
             border: 0;
             border-top: 2px solid var(--primary-accent);
             opacity:0.2;
+            margin-top: 10px;
+            padding:0;
+            margin-bottom:0;
         }
 
         /* MAIN ACTION BUTTON (Floating Style) */
@@ -85,36 +93,33 @@
             justify-content: center;
             gap: 8px;
             width: fit-content;
+            position: fixed;
+            right:20px;
+            bottom: 20px;
+            margin: 0;
+            z-index: 100;
+            padding-right:20px;
+            
         }
 
 
         /* CARD VIEW AREA */
         #prayerCardsView {
+        
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
             flex-grow: 1;
             overflow-y: auto; /* Cards will scroll independently */
-            padding-bottom: 100px; /* Allows the last row to 'bleed' past the bottom */
+            padding-bottom: 20px;
+            padding-top: 20px;
+            scrollbar-width: none; /* Firefox */
         }
 
-            /* Hide scrollbar on desktop */
-#prayerCardsView::-webkit-scrollbar {
-    display: none;
-}
-#prayerCardsView {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-            /* Fix button to the bottom center */
-#addPrayerBtn {
-    position: fixed;
-    right:20px;
-    bottom: 20px;
-    margin: 0;
-    z-index: 100;
-}
+        /* Hide scrollbar */
+        #prayerCardsView::-webkit-scrollbar {
+            display: none;
+        }
 
         /* PRAYER REQUEST CARDS */
         .prayer-card {
@@ -130,7 +135,6 @@
             min-width: 0; 
             width: 100%;
             box-sizing: border-box;
-            /* Added for FLIP animation */
             transition: transform 0s, opacity 0s;
         }
 
@@ -139,8 +143,8 @@
         }
 
         .card-name {
-        opacity:0.8;
-        font-family:Yrsa, serif;
+            opacity:0.8;
+            font-family:Yrsa, serif;
             font-weight: 600;
             font-size: 2em;
             line-height:1;
@@ -163,12 +167,12 @@
             line-height: 1.4;
             margin-bottom: 15px;
             flex-grow: 1; 
-            overflow-y: auto; /* Enable scroll if text overflows */
+            overflow-y: auto; 
             overflow-x: hidden;
-            &::-webkit-scrollbar {
-        display: none;
-        
-    }
+            scrollbar-width: none;
+        }
+        .card-body::-webkit-scrollbar {
+            display: none;
         }
 
         /* ACTION AREA */
@@ -345,44 +349,12 @@
         /* MOBILE RESPONSIVE */
         @media (max-width: 768px) {
             .container {
-                padding: 20px;
-                height: 90%;
-            }
-
-            #prayerCardsView {
-                display: flex;
-                overflow-x: auto;
-                overflow-y: hidden;
-                scroll-snap-type: x mandatory;
-                gap: 30px;
-                padding: 20px;
-                margin: 0;
-                flex-grow:1;
-            }
-
-            #prayerCardsView::-webkit-scrollbar {
-                display: none;
+                padding: 0 0px;
             }
             #prayerCardsView {
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-            }
-            
-            .card-body {
-                font-size: 2em;
-                font-weight:400;
-                color: #555;
-                opacity:0.6;
-                line-height: 1.2;
-                margin-bottom: 15px;
-                overflow-y: auto; /* Ensure scrollability on mobile */
-            }
-
-            .prayer-card {
-                flex: 0 0 75vw;
-                scroll-snap-align: center;
-                margin: 0 10px;
-                height: 80%;
+                display: grid;
+                grid-template-columns: 1fr;
+                padding:20px;
             }
         }
     </style>
@@ -390,14 +362,16 @@
 <body>
 
 <div class="container">
-    <header>
+<header>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
         <h1>Prayer Intentions</h1>
-        <hr>
-    </header>
-
+        <button id="addPrayerBtn" style="position: static; box-shadow: none; background: none; color: var(--primary-accent); font-size: 2em; padding: 0 10;">+</button>
+    </div>
+    <hr>
+</header>
     <div id="prayerCardsView"></div>
 
-    <button id="addPrayerBtn">+</button>
+   
 </div>
 
 <div id="prayerModal" class="modal">
@@ -446,6 +420,7 @@
     const archiveGroup = document.getElementById('archiveGroup');
 
     let prayerRequests = [];
+    let prayedCache = new Set();
 
     const BIN_ID = "6a386bb8f5f4af5e291a1c9e";
     const MASTER_KEY = "$2a$10$uWA6RwV4hxUT6D49HU56VuPjVsoNcHcTmf.jSgx.o6RXd2G1wGyse"; 
@@ -456,7 +431,7 @@
             const response = await fetch(BASE_URL, { headers: { "X-Master-Key": MASTER_KEY } });
             const result = await response.json();
             prayerRequests = result.record || []; 
-            renderCards();
+            render();
         } catch (err) { console.error("Error loading data:", err); }
     };
 
@@ -487,28 +462,18 @@
 
         await persistToJSONbin();
         closeModal();
-        renderCards();
+        render();
     };
 
     const markPrayed = async (index, cardElement) => {
         prayerRequests[index].lastPrayed = new Date().toISOString();
-        const isMobile = window.innerWidth <= 768;
-
-        if (isMobile) {
-            cardElement.style.transition = 'transform 0.4s ease-in, opacity 0.4s ease-in';
-            cardElement.style.transform = 'translateY(-100px)';
-            cardElement.style.opacity = '0';
-            
-            cardElement.addEventListener('transitionend', async () => {
-                await persistToJSONbin();
-                renderCards();
-            }, { once: true });
-        } else {
-            const firstPositions = capturePositions();
-            renderCards(true);
-            flipAnimate(firstPositions);
-            await persistToJSONbin();
-        }
+        prayedCache.add(index);
+        
+        const firstPositions = capturePositions();
+        render();
+        flipAnimate(firstPositions);
+        
+        await persistToJSONbin();
     }
 
     const capturePositions = () => {
@@ -516,7 +481,7 @@
         viewArea.querySelectorAll('.prayer-card').forEach(card => {
             const id = card.dataset.id;
             const rect = card.getBoundingClientRect();
-            positions[id] = { rect: rect, scrollLeft: viewArea.scrollLeft };
+            positions[id] = { rect: rect };
         });
         return positions;
     }
@@ -535,11 +500,12 @@
 
             if (deltaX === 0 && deltaY === 0) return;
 
-            card.style.transition = 'transform 0s, opacity 0s';
+            card.style.transition = 'none';
             card.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-            card.getBoundingClientRect();
-            card.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
-            card.style.transform = '';
+            requestAnimationFrame(() => {
+                card.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
+                card.style.transform = '';
+            });
         });
     }
 
@@ -558,16 +524,8 @@
         return days === 1 ? "1 DAY AGO" : `${days} DAYS AGO`;
     };
 
-    const renderCards = (skipFlipCapture = false) => {
-        let firstPositions = !skipFlipCapture ? capturePositions() : {};
-        viewArea.innerHTML = ''; 
-        
-        const prayedItems = prayerRequests.filter(p => p.lastPrayed && !p.archived);
-        const times = prayedItems.map(p => new Date(p.lastPrayed).getTime());
-        const minTime = Math.min(...times);
-        const maxTime = Math.max(...times);
-
-        const sorted = prayerRequests
+    const getSortedPrayers = () => {
+        return prayerRequests
             .map((p, i) => ({ ...p, originalIndex: i, id: `card-${i}` }))
             .filter(p => !p.archived)
             .sort((a, b) => {
@@ -576,6 +534,17 @@
                 if (!b.lastPrayed) return 1;
                 return new Date(a.lastPrayed) - new Date(b.lastPrayed);
             });
+    }
+
+    const render = () => {
+        let firstPositions = capturePositions();
+        viewArea.innerHTML = ''; 
+        const sorted = getSortedPrayers();
+        
+        const prayedItems = sorted.filter(p => p.lastPrayed);
+        const times = prayedItems.map(p => new Date(p.lastPrayed).getTime());
+        const minTime = Math.min(...times);
+        const maxTime = Math.max(...times);
 
         sorted.forEach((item) => {
             let opacity = 0;
@@ -583,22 +552,20 @@
                 const time = new Date(item.lastPrayed).getTime();
                 opacity = maxTime === minTime ? 1 : (time - minTime) / (maxTime - minTime);
             }
-            const card = createCardMarkup(item, item.originalIndex, opacity);
-            viewArea.appendChild(card);
+            viewArea.appendChild(createCardMarkup(item, item.originalIndex, opacity, prayedCache.has(item.originalIndex)));
         });
-
-        if (!skipFlipCapture) flipAnimate(firstPositions);
+        flipAnimate(firstPositions);
     }
 
-    const createCardMarkup = (prayer, index, opacity) => {
+    const createCardMarkup = (prayer, index, opacity, isTempPrayed) => {
         const card = document.createElement('div');
         card.classList.add('prayer-card');
         card.dataset.id = prayer.id;
         
+        if (isTempPrayed) card.style.opacity = '0.5';
+        
         const isNeverPrayed = !prayer.lastPrayed;
-        // Background: 0.2 (oldest/newest scale) to 1.0 (most recent)
         const bgColor = isNeverPrayed ? 'transparent' : `rgba(202, 172, 92, ${0.2 + (0.8 * opacity)})`;
-        // Text: Light Gold/Grey (0.2) transitions to White (1.0)
         const textColor = isNeverPrayed ? '#888888' : (opacity > 0.5 ? '#FFFFFF' : 'var(--secondary-accent)');
         
         card.innerHTML = `
