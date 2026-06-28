@@ -6,12 +6,9 @@
     <title>Submit Prayer Intentions for Ryan</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
-        (function() {
-            emailjs.init("zbZDp2BUwfWziJlP8");
-        })();
+        (function() { emailjs.init("zbZDp2BUwfWziJlP8"); })();
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/x-icon" href="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-32x32.png">
     <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,9 +16,6 @@
             --primary-accent: #00437A;
             --text-color: #333333;
             --card-bg: #FFFFFF;
-            --radius-main: 16px;
-            --radius-input: 10px;
-            --shadow-subtle: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         body {
@@ -30,101 +24,111 @@
             font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
-            padding: 40px 20px;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
         }
 
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 450px;
             background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: var(--radius-main);
-            box-shadow: var(--shadow-subtle);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center;
         }
-        
-        #logoIMG {transform: scale(0.8,0.8);}
-        
+
+        .header { margin-bottom: 30px; }
+
+        #logoIMG { height: 50px; margin-bottom: 15px; }
+
         h1 {
             font-family: 'Yrsa', serif;
             color: var(--primary-accent);
-            margin-top: 0;
+            font-size: 2rem;
+            margin: 0;
             line-height:1;
         }
 
-        .input-group {
-            margin-bottom: 20px;
-        }
+        .input-group { margin-bottom: 20px; text-align: left; }
 
         label {
             display: block;
             font-weight: 600;
             margin-bottom: 8px;
-            font-size: 1em;
+            font-size: 0.9rem;
         }
 
         input, textarea {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             border: 1.5px solid #E0E0E0;
-            border-radius: var(--radius-input);
+            border-radius: 14px;
             box-sizing: border-box;
             font-family: inherit;
-            transition: all 0.2s ease;
-            font-size:1em;
+            font-size: 1rem;
+            transition: border-color 0.2s;
         }
 
         input:focus, textarea:focus {
             outline: none;
             border-color: var(--primary-accent);
-            box-shadow: 0 0 0 3px rgba(0, 67, 122, 0.1);
         }
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             background-color: var(--primary-accent);
             color: white;
             border: none;
-            border-radius: var(--radius-input);
+            border-radius: 14px;
             font-weight: 600;
             cursor: pointer;
-            font-size: 1em;
-            transition: opacity 0.2s, transform 0.2s;
+            font-size: 1rem;
+            margin-top: 10px;
         }
 
-        /* Disabled State Styles */
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-            transform: none;
-            filter: none;
+        button:disabled { background-color: #cccccc; cursor: not-allowed; }
+
+        /* Footer Section */
+        .footer-section {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 3px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-align: left;
         }
 
-        button:not(:disabled):hover {
-            filter: brightness(1.1);
-            transform: translateY(-1px);
+        .profile-pic {
+            width: 75px;
+            height: 75px;
+            background-color: #ddd;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
         }
 
         #statusMsg {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 0.9em;
-            color: #d9534f;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: black;
+            min-height: 1.2em;
         }
-        
-        hr{border-top: 2px solid var(--primary-accent);
-        opacity:0.2;
-        margin-bottom:20px;}
+
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <img id="logoIMG" src="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-192x192.png" alt="Logo" style="height: 40px; width: auto; object-fit: contain;">
-        <h1 style="margin: 0;">Your Prayer Intentions</h1>
+    <div class="header">
+        <img id="logoIMG" src="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-192x192.png" alt="Logo">
+        <h1>Your Prayer Intentions</h1>
     </div>
-    <hr>
     
     <div class="input-group">
         <label>Your Name</label>
@@ -133,11 +137,17 @@
 
     <div class="input-group">
         <label>Prayer Request</label>
-        <textarea id="pRequest" rows="5" placeholder="How can I pray for you?"></textarea>
+        <textarea id="pRequest" rows="4" placeholder="How can I pray for you?"></textarea>
     </div>
 
     <button id="submitBtn" disabled>Submit Intention</button>
+    
     <div id="statusMsg"></div>
+
+    <div class="footer-section">
+        <img id="profileIMG" src="https://focus.org/wp-content/uploads/2024/03/NST25_RyanPittner.jpeg" alt="Profile" class="profile-pic">
+        <p style="margin: 0; font-weight: 600; color: var(--primary-accent);">Know of my prayers for you, <br><span class="bigger">Ryan Pittner</p>
+    </div>
 </div>
 
 <script>
@@ -150,23 +160,16 @@
     const submitBtn = document.getElementById('submitBtn');
     const statusMsg = document.getElementById('statusMsg');
 
-    // Function to toggle button state
     const validateForm = () => {
-        if(nameInput.value.trim() !== '' && requestInput.value.trim() !== '') {
-            submitBtn.disabled = false;
-        } else {
-            submitBtn.disabled = true;
-        }
+        submitBtn.disabled = !(nameInput.value.trim() !== '' && requestInput.value.trim() !== '');
     };
 
-    // Listen for typing in inputs
     nameInput.addEventListener('input', validateForm);
     requestInput.addEventListener('input', validateForm);
 
     submitBtn.onclick = async () => {
         const name = nameInput.value;
         const request = requestInput.value;
-
         submitBtn.disabled = true;
         submitBtn.innerText = "Sending...";
         
@@ -174,14 +177,7 @@
             const getRes = await fetch(BASE_URL, { headers: { "X-Master-Key": MASTER_KEY } });
             const data = await getRes.json();
             const currentList = data.record || [];
-
-            currentList.push({
-                name,
-                request,
-                date: new Date().toISOString().split('T')[0],
-                count: 0,
-                archived: false
-            });
+            currentList.push({ name, request, date: new Date().toISOString().split('T')[0], count: 0, archived: false });
 
             await fetch(BASE_URL, {
                 method: "PUT",
@@ -189,20 +185,13 @@
                 body: JSON.stringify(currentList)
             });
 
-            await emailjs.send("service_njo15ot", "template_d11rwug", {
-                pName: name,
-                pRequest: request
-            });
+            await emailjs.send("service_njo15ot", "template_d11rwug", { pName: name, pRequest: request });
 
-            statusMsg.style.color = "#333333";
-            statusMsg.innerText = "Thank you for submitting an intention. Know of my prayers for you!\n\n In Christ,\nRyan Pittner";
-            nameInput.value = '';
-            requestInput.value = '';
+            statusMsg.innerText = "🙏🏻 Your intention was recieved. I am praying for you!";
+            nameInput.value = ''; requestInput.value = '';
         } catch (e) {
-            console.error("Full Error:", e);
-            statusMsg.style.color = "#d9534f";
-            statusMsg.innerText = "Error: Please check your internet connection and try again.";
-            submitBtn.disabled = false; // Re-enable if error
+            statusMsg.innerText = "Error: Please check your connection.";
+            submitBtn.disabled = false;
         }
         submitBtn.innerText = "Submit Intention";
     };
