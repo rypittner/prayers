@@ -7,11 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-32x32.png">
     <style>
         /* CSS VARIABLES FOR MODERN, LIGHT THEME */
         :root {
             --bg-color: #EEECE9; /* Cream / Off White */
-            --primary-accent: #546F88; /* Muted Blue */
+            --primary-accent: #00437A; /* Muted Blue */
             --secondary-accent: #CAAC5C; /* Muted Gold (for highlights/counters) */
             --header-font: 'Yrsa', serif;
             --body-font: 'Inter', sans-serif;
@@ -47,6 +48,7 @@
 
         /* HEADER SECTION */
         header {
+        padding-top:10px;
             background: var(--bg-color);
             position: sticky;
             top: 0;
@@ -101,6 +103,11 @@
             padding-right:20px;
             
         }
+        
+        #logoIMG{
+        	padding-left:20px;
+        	transform: scale(0.8, 0.8);
+            }
 
 
         /* CARD VIEW AREA */
@@ -111,7 +118,7 @@
             gap: 20px;
             flex-grow: 1;
             overflow-y: auto; /* Cards will scroll independently */
-            padding-bottom: 20px;
+            padding-bottom: 40px;
             padding-top: 20px;
             scrollbar-width: none; /* Firefox */
         }
@@ -354,7 +361,7 @@
             #prayerCardsView {
                 display: grid;
                 grid-template-columns: 1fr;
-                padding:20px;
+                padding:20px 20px 50px 20px;
             }
         }
     </style>
@@ -364,6 +371,7 @@
 <div class="container">
 <header>
     <div style="display: flex; justify-content: space-between; align-items: center;">
+    <img id="logoIMG" src="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-192x192.png" alt="Logo" style="height: 40px; width: auto; object-fit: contain;">
         <h1>Prayer Intentions</h1>
         <button id="addPrayerBtn" style="position: static; box-shadow: none; background: none; color: var(--primary-accent); font-size: 2em; padding: 0 10;">+</button>
     </div>
