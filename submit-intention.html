@@ -158,7 +158,8 @@
             document.getElementById('pName').value = '';
             document.getElementById('pRequest').value = '';
         } catch (e) {
-            statusMsg.innerText = "Error sending request. Please try again.";
+            console.error("Full Error:", e); // This prints the real error to your browser console
+            statusMsg.innerText = "Error: " + (e.text || "Check console for details");
         }
         submitBtn.innerText = "Submit Request";
     };
