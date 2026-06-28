@@ -4,18 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit Prayer Intentions for Ryan</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("zbZDp2BUwfWziJlP8");
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #EEECE9;
-            --primary-accent: #558a99;
+            --primary-accent: #00437A;
             --text-color: #333333;
             --card-bg: #FFFFFF;
             --radius-main: 16px;
-            --radius-input: 8px;
-            --shadow-subtle: 0 4px 15px rgba(0,0,0,0.05);
+            --radius-input: 10px;
+            --shadow-subtle: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         body {
@@ -35,11 +41,14 @@
             border-radius: var(--radius-main);
             box-shadow: var(--shadow-subtle);
         }
-
+        
+        #logoIMG {transform: scale(0.8,0.8);}
+        
         h1 {
             font-family: 'Yrsa', serif;
             color: var(--primary-accent);
             margin-top: 0;
+            line-height:1;
         }
 
         .input-group {
@@ -50,16 +59,24 @@
             display: block;
             font-weight: 600;
             margin-bottom: 8px;
-            font-size: 0.9em;
+            font-size: 1em;
         }
 
         input, textarea {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #DDDDDD;
+            padding: 14px;
+            border: 1.5px solid #E0E0E0;
             border-radius: var(--radius-input);
             box-sizing: border-box;
             font-family: inherit;
+            transition: all 0.2s ease;
+            font-size:1em;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px rgba(0, 67, 122, 0.1);
         }
 
         button {
@@ -72,24 +89,46 @@
             font-weight: 600;
             cursor: pointer;
             font-size: 1em;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        /* Disabled State Styles */
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            filter: none;
+        }
+
+        button:not(:disabled):hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
         }
 
         #statusMsg {
             margin-top: 15px;
             text-align: center;
             font-size: 0.9em;
+            color: #d9534f;
         }
+        
+        hr{border-top: 2px solid var(--primary-accent);
+        opacity:0.2;
+        margin-bottom:20px;}
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Prayer Intentions</h1>
-    <p>Please let me know how I can pray for your below!</p>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <img id="logoIMG" src="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-192x192.png" alt="Logo" style="height: 40px; width: auto; object-fit: contain;">
+        <h1 style="margin: 0;">Your Prayer Intentions</h1>
+    </div>
+    <hr>
     
     <div class="input-group">
         <label>Your Name</label>
-        <input type="text" id="pName" placeholder="Name or Anonymous">
+        <input type="text" id="pName" placeholder="Name">
     </div>
 
     <div class="input-group">
@@ -97,7 +136,7 @@
         <textarea id="pRequest" rows="5" placeholder="How can I pray for you?"></textarea>
     </div>
 
-    <button id="submitBtn">Submit Intenion</button>
+    <button id="submitBtn" disabled>Submit Intention</button>
     <div id="statusMsg"></div>
 </div>
 
@@ -106,27 +145,36 @@
     const MASTER_KEY = "$2a$10$uWA6RwV4hxUT6D49HU56VuPjVsoNcHcTmf.jSgx.o6RXd2G1wGyse";
     const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
+    const nameInput = document.getElementById('pName');
+    const requestInput = document.getElementById('pRequest');
     const submitBtn = document.getElementById('submitBtn');
     const statusMsg = document.getElementById('statusMsg');
 
-    submitBtn.onclick = async () => {
-        const name = document.getElementById('pName').value;
-        const request = document.getElementById('pRequest').value;
-
-        if(!name || !request) {
-            alert('Please fill out both fields.');
-            return;
+    // Function to toggle button state
+    const validateForm = () => {
+        if(nameInput.value.trim() !== '' && requestInput.value.trim() !== '') {
+            submitBtn.disabled = false;
+        } else {
+            submitBtn.disabled = true;
         }
+    };
 
+    // Listen for typing in inputs
+    nameInput.addEventListener('input', validateForm);
+    requestInput.addEventListener('input', validateForm);
+
+    submitBtn.onclick = async () => {
+        const name = nameInput.value;
+        const request = requestInput.value;
+
+        submitBtn.disabled = true;
         submitBtn.innerText = "Sending...";
         
         try {
-            // 1. Get existing data
             const getRes = await fetch(BASE_URL, { headers: { "X-Master-Key": MASTER_KEY } });
             const data = await getRes.json();
             const currentList = data.record || [];
 
-            // 2. Add new entry
             currentList.push({
                 name,
                 request,
@@ -135,20 +183,28 @@
                 archived: false
             });
 
-            // 3. Save back
             await fetch(BASE_URL, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", "X-Master-Key": MASTER_KEY },
                 body: JSON.stringify(currentList)
             });
 
-            statusMsg.innerText = "Thank you for submitting your intentions. Know of my prayers for you! ~Ryan Pittner.";
-            document.getElementById('pName').value = '';
-            document.getElementById('pRequest').value = '';
+            await emailjs.send("service_njo15ot", "template_d11rwug", {
+                pName: name,
+                pRequest: request
+            });
+
+            statusMsg.style.color = "#333333";
+            statusMsg.innerText = "Thank you for submitting an intention. Know of my prayers for you!\n\n In Christ,\nRyan Pittner";
+            nameInput.value = '';
+            requestInput.value = '';
         } catch (e) {
-            statusMsg.innerText = "Error sending request. Please try again.";
+            console.error("Full Error:", e);
+            statusMsg.style.color = "#d9534f";
+            statusMsg.innerText = "Error: Please check your internet connection and try again.";
+            submitBtn.disabled = false; // Re-enable if error
         }
-        submitBtn.innerText = "Submit Request";
+        submitBtn.innerText = "Submit Intention";
     };
 </script>
 
