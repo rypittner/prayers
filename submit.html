@@ -2,154 +2,163 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Prayer Intentions for Ryan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Submit a Prayer Intentions</title>
+    
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() { emailjs.init("zbZDp2BUwfWziJlP8"); })();
     </script>
     <link rel="icon" type="image/x-icon" href="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-32x32.png">
-    <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg-color: #EEECE9;
-            --primary-accent: #00437A;
-            --text-color: #333333;
-            --card-bg: #FFFFFF;
+            --bg: #F4F3F0;
+            --panel: #FFFFFF;
+            --blue: #00437A;
+            --text: #1a1a1a;
+            --gray: #888;
         }
 
         body {
-        
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg);
             font-family: 'Inter', sans-serif;
+            color: var(--text);
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-        border-top: 8px solid #00437A;
-        
             width: 100%;
-            max-width: 450px;
-            background-color: var(--card-bg);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            text-align: center;
+            overflow-x: hidden; /* Prevents horizontal scroll */
         }
 
-        .header { margin-bottom: 30px; }
-
-        #logoIMG { height: 50px; margin-bottom: 15px; }
-
-        h1 {
-            font-family: 'Yrsa', serif;
-            color: var(--primary-accent);
-            font-size: 2rem;
-            margin: 0;
-            line-height:1;
+        .app-container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--panel);
+            padding: 48px;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            border: 2px solid rgba(0,0,0,0.1);
+            box-sizing: border-box; /* Crucial for keeping padding inside width */
         }
 
-        .input-group { margin-bottom: 20px; text-align: left; }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
+        /* Mobile full-width adjustment */
+        @media (max-width: 480px) {
+            body {
+                align-items: flex-start;
+                padding: 0;
+            }
+            .app-container {
+                max-width: 100vw;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+                padding: 40px;
+                min-height: 100vh;
+                box-shadow: none;
+            }
         }
 
+        .header-section { margin-bottom: 40px; }
+        .logo { height: 40px; margin-bottom: 24px; }
+        
+        h1 { 
+            font-family: 'Cardo', serif; 
+            font-size: 2.5rem; 
+            font-weight: 500; 
+            margin: 0; 
+            color: var(--blue); 
+            letter-spacing: -0.02em; 
+        }
+        
+        p.subtitle { color: var(--gray); font-size: 0.95rem; margin-top: 8px; }
+
+        .form-group { margin-bottom: 24px; }
+        label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); font-weight: 600; display: block; margin-bottom: 12px; }
+        
         input, textarea {
             width: 100%;
-            padding: 15px;
-            border: 1.5px solid #E0E0E0;
-            border-radius: 14px;
-            box-sizing: border-box;
+            padding: 16px;
+            background: #F9F9F7;
+            border: 1px solid #EAEAE8;
+            border-radius: 16px;
             font-family: inherit;
             font-size: 1rem;
-            transition: border-color 0.2s;
+            box-sizing: border-box; /* Ensures padding does not cause overflow */
+            display: block;
         }
-
         input:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary-accent);
+            border-color: var(--blue);
+            background: #FFF;
+            box-shadow: 0 4px 12px rgba(0,67,122,0.08);
         }
 
-        button {
+        .submit-btn {
             width: 100%;
-            padding: 15px;
-            background-color: var(--primary-accent);
-            color: white;
+            padding: 18px;
+            background: var(--blue);
+            color: #FFF;
             border: none;
-            border-radius: 14px;
+            border-radius: 16px;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            font-size: 1rem;
             margin-top: 10px;
+            transition: transform 0.2s, background 0.3s;
         }
+        .submit-btn:hover { background: #005A9E; transform: translateY(-2px); }
+        .submit-btn:active { transform: translateY(0); }
+        .submit-btn:disabled { background-color: #cccccc; cursor: not-allowed; transform: none; }
 
-        button:disabled { background-color: #cccccc; cursor: not-allowed; }
-
-        /* Footer Section */
-        .footer-section {
-            margin-top: 35px;
-            padding-top: 25px;
-            border-top: 3px solid #eee;
+        .footer-credit {
+            margin-top: 40px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 15px;
-            text-align: left;
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid #F0F0F0;
         }
-
-        .profile-pic {
-            width: 75px;
-            height: 75px;
-            background-color: #ddd;
-            border-radius: 50%;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-
+        .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+        .credit-text { font-size: 1rem; font-weight: 500; line-height: 1.4; }
+        
         #statusMsg {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: black;
-            min-height: 1.2em;
-        }
-
+          margin-top: 20px;
+          font-size: 1rem;
+          color: var(--blue);
+          text-align: center;
+          min-height: 1.2em;
+          font-weight: 600;
+          line-height: 1.4; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <img id="logoIMG" src="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-192x192.png" alt="Logo">
-        <h1>Your Prayer Intentions</h1>
-    </div>
-    
-    <div class="input-group">
-        <label>Your Name</label>
-        <input type="text" id="pName" placeholder="Name">
+<div class="app-container">
+    <div class="header-section">
+        <img src="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-192x192.png" class="logo" alt="Logo">
+        <h1>Prayer Intentions</h1>
+        <p class="subtitle">Let me know how I can pray for you below!</p>
     </div>
 
-    <div class="input-group">
-        <label>Prayer Request</label>
-        <textarea id="pRequest" rows="4" placeholder="How can I pray for you?"></textarea>
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" id="pName" placeholder="Your name">
+    </div>
+    <div class="form-group">
+        <label>Intention</label>
+        <textarea id="pRequest" rows="4" placeholder="How can I pray for you today?"></textarea>
     </div>
 
-    <button id="submitBtn" disabled>Submit Intention</button>
-    
+    <button class="submit-btn" id="submitBtn" disabled>Send Intention</button>
     <div id="statusMsg"></div>
 
-    <div class="footer-section">
-        <img id="profileIMG" src="https://focus.org/wp-content/uploads/2024/03/NST25_RyanPittner.jpeg" alt="Profile" class="profile-pic">
-        <p style="margin: 0; font-weight: 600; color: var(--primary-accent);">Know of my prayers for you, <br><span class="bigger">Ryan Pittner</p>
+    <div class="footer-credit">
+        <img src="https://focus.org/wp-content/uploads/2024/03/NST25_RyanPittner.jpeg" class="avatar" alt="Ryan Pittner">
+        <div class="credit-text">In Christ, Ryan Pittner<br><span style="color:var(--gray); font-weight:300;">FOCUS Missionary at UNLV</span></div>
     </div>
 </div>
 
@@ -190,13 +199,15 @@
 
             await emailjs.send("service_njo15ot", "template_d11rwug", { pName: name, pRequest: request });
 
-            statusMsg.innerText = "🙏🏻 Your intention was recieved. I am praying for you!";
-            nameInput.value = ''; requestInput.value = '';
+            statusMsg.innerText = "🙏🏻 Your intention was received. I am praying for you!";
+            nameInput.value = ''; 
+            requestInput.value = '';
+            validateForm();
         } catch (e) {
             statusMsg.innerText = "Error: Please check your connection.";
             submitBtn.disabled = false;
         }
-        submitBtn.innerText = "Submit Intention";
+        submitBtn.innerText = "Send Intention";
     };
 </script>
 
