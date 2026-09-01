@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOCUS Prayer App</title>
+    <title>MP Prayer Intentions</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -236,17 +236,34 @@
         #prayerCardsView {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-auto-rows: max-content;
             gap: 20px;
             flex-grow: 1;
             overflow-y: auto; /* Cards will scroll independently */
-            padding-bottom: 40px;
-            padding-top: 20px;
+            padding: 20px 0 40px 0;
             scrollbar-width: none; /* Firefox */
         }
 
         /* Hide scrollbar */
         #prayerCardsView::-webkit-scrollbar {
             display: none;
+        }
+
+        /* STAGGERED FADE-IN ANIMATION FOR TAB SWITCHES / PAGE LOADS */
+        @keyframes fadeInStaggered {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .prayer-card.animate-fade-in {
+            animation: fadeInStaggered 0.35s ease forwards;
+            opacity: 0; /* Starts hidden until animation triggers */
         }
 
         /* PRAYER REQUEST CARDS */
@@ -263,7 +280,7 @@
             min-width: 0; 
             width: 100%;
             box-sizing: border-box;
-            transition: transform 0s, opacity 0s, border 0.2s, box-shadow 0.2s;
+            transition: border 0.2s, box-shadow 0.2s;
             border: 2px solid transparent;
             cursor: default;
         }
@@ -623,7 +640,7 @@
 
         <div class="tab-selector-container" id="tabSelector">
             <button class="tab-btn" data-view="mpd">MPD</button>
-            <button class="tab-btn active" data-view="depth_chart">Depth Chart</button>
+            <button class="tab-btn" data-view="depth_chart">Depth Chart</button>
             <button class="tab-btn" data-view="personal">Personal</button>
         </div>
 
@@ -637,7 +654,7 @@
     <div class="header-bottom-row">
         <div class="tab-selector-container" id="tabSelectorMobile">
             <button class="tab-btn" data-view="mpd">MPD</button>
-            <button class="tab-btn active" data-view="depth_chart">Depth Chart</button>
+            <button class="tab-btn" data-view="depth_chart">Depth Chart</button>
             <button class="tab-btn" data-view="personal">Personal</button>
         </div>
     </div>
@@ -712,6 +729,9 @@
 </div>
 
 <script>
+    // Immediately initialize view variable from localStorage to avoid any split-second default flash
+    let currentView = localStorage.getItem('activePrayerTab') || 'depth_chart';
+
     const modal = document.getElementById('prayerModal');
     const openBtn = document.getElementById('addPrayerBtn');
     const closeBtn = document.getElementById('closeModal');
@@ -720,6 +740,22 @@
     const viewArea = document.getElementById('prayerCardsView');
     const tabSelector = document.getElementById('tabSelector');
     const tabSelectorMobile = document.getElementById('tabSelectorMobile');
+
+    // Immediately mark the correct tab active in the DOM before first paint/load
+    const applyInitialActiveTab = () => {
+        const containers = [tabSelector, tabSelectorMobile];
+        containers.forEach(container => {
+            if (!container) return;
+            container.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.view === currentView) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        });
+    };
+    applyInitialActiveTab();
 
     const nameInput = document.getElementById('pName');
     const dateInput = document.getElementById('pDate');
@@ -743,7 +779,6 @@
     let prayedCache = new Set();
     let selectedIndices = new Set();
     let selectedDepthValue = '';
-    let currentView = localStorage.getItem('activePrayerTab') || 'depth_chart';
     let bulkSelectionActive = false;
 
     const BIN_ID = "6a9638f1f5f4af5e295a7630";
@@ -772,17 +807,7 @@
     };
 
     const updateTabUI = () => {
-        const containers = [tabSelector, tabSelectorMobile];
-        containers.forEach(container => {
-            if (!container) return;
-            container.querySelectorAll('.tab-btn').forEach(btn => {
-                if (btn.dataset.view === currentView) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-        });
+        applyInitialActiveTab();
     };
 
     const loadPrayers = async () => {
@@ -800,7 +825,7 @@
                 };
             }
             updateTabUI();
-            render();
+            render(true); // Pass true to stagger fade-in cards upon initial page load
         } catch (err) { console.error("Error loading data:", err); }
     };
 
@@ -850,7 +875,7 @@
         selectedIndices.clear();
         await persistToJSONbin();
         closeModal();
-        render();
+        render(false);
     };
 
     const deletePrayer = async (index) => {
@@ -859,7 +884,7 @@
         selectedIndices.clear();
         await persistToJSONbin();
         closeModal();
-        render();
+        render(false);
     };
 
     const markPrayed = async (index, cardElement) => {
@@ -868,7 +893,7 @@
         prayedCache.add(index);
         
         const firstPositions = capturePositions();
-        render();
+        render(false);
         flipAnimate(firstPositions);
         
         await persistToJSONbin();
@@ -948,8 +973,7 @@
         }
     };
 
-    const render = () => {
-        let firstPositions = capturePositions();
+    const render = (animateIn = false) => {
         viewArea.innerHTML = ''; 
         const sorted = getSortedPrayers();
         
@@ -958,15 +982,21 @@
         const minTime = Math.min(...times);
         const maxTime = Math.max(...times);
 
-        sorted.forEach((item) => {
+        sorted.forEach((item, idx) => {
             let opacity = 0;
             if (item.lastPrayed && currentView !== 'depth_chart') {
                 const time = new Date(item.lastPrayed).getTime();
                 opacity = maxTime === minTime ? 1 : (time - minTime) / (maxTime - minTime);
             }
-            viewArea.appendChild(createCardMarkup(item, item.originalIndex, opacity, prayedCache.has(item.originalIndex), currentView));
+            const card = createCardMarkup(item, item.originalIndex, opacity, prayedCache.has(item.originalIndex), currentView);
+            
+            if (animateIn) {
+                card.classList.add('animate-fade-in');
+                card.style.animationDelay = `${idx * 0.05}s`;
+            }
+            
+            viewArea.appendChild(card);
         });
-        flipAnimate(firstPositions);
         updateBulkToolbar();
     }
 
@@ -1120,12 +1150,13 @@
 
     // Event Listeners for Tabs
     const handleTabChange = (view) => {
+        if (currentView === view) return; // Ignore if already on this tab
         currentView = view;
         localStorage.setItem('activePrayerTab', currentView);
         selectedIndices.clear();
         bulkSelectionActive = false;
         updateTabUI();
-        render();
+        render(true); // Animate fade-in on tab change
     };
 
     tabSelector.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1144,7 +1175,7 @@
         if (!bulkSelectionActive) {
             selectedIndices.clear();
         }
-        render();
+        render(false);
     };
 
     // Depth Pills Selection click handling in Modal
@@ -1167,7 +1198,7 @@
         selectedIndices.clear();
         bulkSelectionActive = false;
         await persistToJSONbin();
-        render();
+        render(false);
     };
 
     openBtn.onclick = () => openModal();
