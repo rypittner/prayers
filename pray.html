@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> MP Prayer Intentions</title>
+    <title>MP Prayer Intentions</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Yrsa:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -55,16 +55,6 @@
             z-index: 200;
         }
 
-        header h1 {
-            padding: 20px;
-            font-family: var(--body-font);
-            color: var(--primary-accent);
-            text-transform: uppercase;
-            font-size: 1em;
-            letter-spacing: 1px;
-            margin: 0;
-        }
-
         header hr {
             width: 100%;
             border: 0;
@@ -75,58 +65,171 @@
             margin-bottom: 0;
         }
 
-        /* PAGE SELECTOR DROPDOWN STYLING */
-        #pageSelector {
+        .header-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px; /* Aligned height */
+        }
+
+        .header-bottom-row {
+            display: none; /* Hidden on desktop, enabled via mobile media query */
+        }
+
+        /* LOGO, MULTI-SELECT TOGGLE AREA & STICKING PILL */
+        .header-left-group {
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: 250px; /* Fixed anchor width so desktop menu stays centered */
+            flex-shrink: 0;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            height: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        #logoIMG {
+            padding-left: 20px;
+            transform: scale(0.8, 0.8);
+            transition: transform 0.2s;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .active-logo-check {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-accent);
+            margin-left: 20px;
+            background-color: #FFFFFF;
+            border: 2px solid var(--primary-accent);
+            border-radius: 50%;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .bulk-action-inline {
             font-family: var(--body-font);
-            font-size: 0.9em;
+            font-size: 0.85em;
             font-weight: 600;
             color: var(--primary-accent);
+            background: var(--card-bg);
+            border: 1px solid #DDDDDD;
+            border-left: none; /* Remove left border so it merges seamlessly into the circle */
+            padding: 0 16px 0 24px; 
+            height: 40px;
+            border-top-right-radius: var(--radius-btn);
+            border-bottom-right-radius: var(--radius-btn);
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            cursor: pointer;
+            box-shadow: var(--shadow-subtle);
+            transition: background var(--transition-speed);
+            display: none;
+            white-space: nowrap;
+            align-items: center;
+            margin-left: -20px; /* Pulls pill left so it tucks neatly underneath/behind the circular edge */
+            z-index: 1;
+        }
+
+        .bulk-action-inline:hover {
+            background-color: #f0f4f8;
+        }
+
+        /* TAB SELECTOR STYLING (Desktop) */
+        .tab-selector-container {
+            display: flex;
+            align-items: center;
+            gap: 4px;
             background-color: var(--card-bg);
             border: 1px solid #DDDDDD;
             border-radius: var(--radius-btn);
-            padding: 8px 16px;
+            padding: 4px;
+            box-shadow: var(--shadow-subtle);
+            height: 40px;
+            box-sizing: border-box;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .tab-btn {
+            font-family: var(--body-font);
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #777777;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-btn);
+            padding: 0 16px;
+            height: 30px;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: var(--shadow-subtle);
+            transition: all var(--transition-speed);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        #pageSelector option {
-            background-color: var(--card-bg);
-            color: var(--primary-accent);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .tab-btn.active {
+            background-color: var(--primary-accent);
+            color: #FFFFFF;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* MAIN ACTION BUTTON (Floating Style) */
+        /* MAIN ACTION BUTTON */
+        .header-right-group {
+            width: 250px;
+            display: flex;
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+
         #addPrayerBtn {
             font-family: var(--body-font);
             font-weight: 600;
-            background-color: var(--primary-accent);
+            background-color: #6CA6C1;
             color: #FFFFFF;
             border: none;
-            padding: 12px 16px;
-            font-size: 1em;
-            border-radius: var(--radius-btn);
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2em;
+            border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: background var(--transition-speed), transform 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            width: fit-content;
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
             margin: 0;
             z-index: 100;
-            padding-right: 20px;
         }
-        
-        #logoIMG {
-            padding-left: 20px;
-            transform: scale(0.8, 0.8);
+
+        #addPrayerBtn:hover {
+            background-color: #5893ae;
+        }
+
+        #addPrayerBtn svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
         }
 
         /* CARD VIEW AREA */
@@ -160,11 +263,24 @@
             min-width: 0; 
             width: 100%;
             box-sizing: border-box;
-            transition: transform 0s, opacity 0s;
+            transition: transform 0s, opacity 0s, border 0.2s, box-shadow 0.2s;
+            border: 2px solid transparent;
+            cursor: default;
+        }
+
+        .prayer-card.selectable {
+            cursor: pointer;
+        }
+
+        .prayer-card.selected-card {
+            border: 2px solid #888888;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         .prayer-card.depth-chart-card {
             height: 180px;
+            min-height: 180px;
+            max-height: 180px;
             padding: 20px 30px;
         }
 
@@ -212,11 +328,13 @@
             align-items: center;
             border-top: 1px solid #EEEEEE;
             padding-top: 10px;
+            margin-top: auto;
         }
 
         .prayer-card.depth-chart-card .card-actions {
             border-top: none;
             padding-top: 0;
+            margin-top: auto;
         }
 
         /* MODAL (OVERLAY AND FORM) */
@@ -278,12 +396,42 @@
             border-color: var(--primary-accent);
         }
 
+        /* DEPTH PILLS PICKER IN MODAL */
+        .depth-picker-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .depth-option-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 2px solid #EEEEEE;
+            border-radius: var(--radius-btn);
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6pt;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
         .form-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 10px;
             gap: 10px;
+        }
+
+        .modal-left-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .cancel-btn {
@@ -299,6 +447,20 @@
 
         .cancel-btn:hover {
             color: #555;
+        }
+
+        .delete-btn-modal {
+            background: none;
+            border: none;
+            color: #EE4B2B;
+            cursor: pointer;
+            font-family: var(--body-font);
+            font-weight: 600;
+            padding: 10px 0px;
+            transition: opacity var(--transition-speed);
+        }
+        .delete-btn-modal:hover {
+            opacity: 0.8;
         }
 
         .confirm-btn {
@@ -361,6 +523,7 @@
             padding: 5px;
             display: flex;
             align-items: center;
+            z-index: 5;
         }
 
         .edit-btn:hover { color: #555; }
@@ -376,6 +539,7 @@
             color: #888888;
             cursor: pointer;
             transition: color 0.2s, background 0.2s, border-color 0.2s;
+            z-index: 5;
         }
 
         .prayed-counter span {
@@ -386,15 +550,58 @@
         /* UTILITY */
         .hidden { display: none; }
 
-        /* MOBILE RESPONSIVE */
+        /* MOBILE RESPONSIVE FIXES */
         @media (max-width: 768px) {
             .container {
                 padding: 0 0px;
+            }
+            header {
+                padding-bottom: 5px;
+            }
+            .header-top-row {
+                padding: 0 10px;
+            }
+            /* Hide absolute centered desktop menu on mobile and use second row instead */
+            .header-top-row .tab-selector-container {
+                display: none;
+            }
+            .header-left-group {
+                width: auto; /* Prevent fixed desktop width from cutting off plus button on mobile */
+            }
+            .header-right-group {
+                width: auto;
+            }
+            .header-bottom-row {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: 10px;
+                padding: 0 10px;
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
+            .header-bottom-row::-webkit-scrollbar {
+                display: none;
+            }
+            .header-bottom-row .tab-selector-container {
+                position: static;
+                transform: none;
+                width: 100%;
+                justify-content: space-between;
+                display: flex !important;
+            }
+            .tab-btn {
+                flex: 1;
+                text-align: center;
+                padding: 0 10px;
+                font-size: 0.75em;
+                letter-spacing: 0.5px;
             }
             #prayerCardsView {
                 display: grid;
                 grid-template-columns: 1fr;
                 padding: 20px 20px 50px 20px;
+                gap: 20px;
             }
         }
     </style>
@@ -403,14 +610,36 @@
 
 <div class="container">
 <header>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-    <img id="logoIMG" src="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-192x192.png" alt="Logo" style="height: 40px; width: auto; object-fit: contain;">
-        <select id="pageSelector">
-            <option value="mpd">MPD</option>
-            <option value="personal">Personal</option>
-            <option value="depth_chart">Depth Chart</option>
-        </select>
-        <button id="addPrayerBtn" style="position: static; box-shadow: none; background: none; color: var(--primary-accent); font-size: 2em; padding: 0 10;">+</button>
+    <div class="header-top-row">
+        <div class="header-left-group">
+            <div class="logo-area" id="logoToggleArea" title="Toggle Bulk Selection Mode">
+                <img id="logoIMG" src="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-192x192.png" alt="Logo">
+                <div id="activeLogoCheckContainer" class="active-logo-check hidden">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--primary-accent)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+            </div>
+            <button class="bulk-action-inline" id="bulkArchiveBtn">Archive Selected</button>
+        </div>
+
+        <div class="tab-selector-container" id="tabSelector">
+            <button class="tab-btn" data-view="mpd">MPD</button>
+            <button class="tab-btn active" data-view="depth_chart">Depth Chart</button>
+            <button class="tab-btn" data-view="personal">Personal</button>
+        </div>
+
+        <div class="header-right-group">
+            <button id="addPrayerBtn" title="Add New Prayer">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="header-bottom-row">
+        <div class="tab-selector-container" id="tabSelectorMobile">
+            <button class="tab-btn" data-view="mpd">MPD</button>
+            <button class="tab-btn active" data-view="depth_chart">Depth Chart</button>
+            <button class="tab-btn" data-view="personal">Personal</button>
+        </div>
     </div>
     <hr>
 </header>
@@ -421,18 +650,50 @@
     <div class="modal-content">
         <h2 id="modalTitle">New Prayer Request</h2>
         <input type="hidden" id="editIndex"> 
-        <div class="input-group">
-            <label for="pName">Requester Name</label>
-            <input type="text" id="pName" placeholder="Name or Initials" required>
+        
+        <div class="input-group" id="standardFormFields">
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label for="pName">Requester Name</label>
+                <input type="text" id="pName" placeholder="Name or Initials">
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label for="pDate">Date</label>
+                <input type="date" id="pDate">
+            </div>
+            <div class="input-group">
+                <label for="pRequest">Prayer Request</label>
+                <textarea id="pRequest" rows="4" placeholder="Your intention here..."></textarea>
+            </div>
         </div>
-        <div class="input-group">
-            <label for="pDate">Date</label>
-            <input type="date" id="pDate" required>
+
+        <div class="input-group" id="depthChartFormFields" style="display: none;">
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label for="dcName">Name</label>
+                <input type="text" id="dcName" placeholder="Contact Name">
+            </div>
+            <div class="input-group">
+                <label>Depth</label>
+                <div class="depth-picker-group" id="depthPickerGroup">
+                    <div class="depth-option-pill" data-depth="New Contact">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>New Contact</span>
+                    </div>
+                    <div class="depth-option-pill" data-depth="Meaningful">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <span>Meaningful</span>
+                    </div>
+                    <div class="depth-option-pill" data-depth="B-Study">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M6 6h10"></path><path d="M6 10h10"></path></svg>
+                        <span>B-Study</span>
+                    </div>
+                    <div class="depth-option-pill" data-depth="Disciple">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>Disciple</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="input-group">
-            <label for="pRequest">Prayer Request</label>
-            <textarea id="pRequest" rows="4" placeholder="Your intention here... (Optional for Depth Chart)"></textarea>
-        </div>
+
         <div class="archive-checkbox-group" id="archiveGroup" style="display: none;">
             <input type="checkbox" id="pArchived">
             <label for="pArchived">
@@ -441,7 +702,10 @@
             </label>
         </div>
         <div class="form-actions">
-            <button class="cancel-btn" id="closeModal">Cancel</button>
+            <div class="modal-left-actions">
+                <button class="cancel-btn" id="closeModal">Cancel</button>
+                <button class="delete-btn-modal hidden" id="deleteModalBtn">Delete</button>
+            </div>
             <button id="submitPrayerBtn" class="confirm-btn">Save</button> 
         </div>
     </div>
@@ -452,19 +716,35 @@
     const openBtn = document.getElementById('addPrayerBtn');
     const closeBtn = document.getElementById('closeModal');
     const submitBtn = document.getElementById('submitPrayerBtn'); 
+    const deleteModalBtn = document.getElementById('deleteModalBtn');
     const viewArea = document.getElementById('prayerCardsView');
-    const pageSelector = document.getElementById('pageSelector');
+    const tabSelector = document.getElementById('tabSelector');
+    const tabSelectorMobile = document.getElementById('tabSelectorMobile');
 
     const nameInput = document.getElementById('pName');
     const dateInput = document.getElementById('pDate');
     const requestInput = document.getElementById('pRequest');
+    const dcNameInput = document.getElementById('dcName');
     const editIndexInput = document.getElementById('editIndex');
     const modalTitle = document.getElementById('modalTitle');
     const archivedCheckbox = document.getElementById('pArchived');
     const archiveGroup = document.getElementById('archiveGroup');
 
+    const standardFormFields = document.getElementById('standardFormFields');
+    const depthChartFormFields = document.getElementById('depthChartFormFields');
+    const depthPickerGroup = document.getElementById('depthPickerGroup');
+
+    const logoToggleArea = document.getElementById('logoToggleArea');
+    const logoIMG = document.getElementById('logoIMG');
+    const activeLogoCheckContainer = document.getElementById('activeLogoCheckContainer');
+    const bulkArchiveBtn = document.getElementById('bulkArchiveBtn');
+
     let allData = { mpd: [], personal: [], depth_chart: [] };
     let prayedCache = new Set();
+    let selectedIndices = new Set();
+    let selectedDepthValue = '';
+    let currentView = localStorage.getItem('activePrayerTab') || 'depth_chart';
+    let bulkSelectionActive = false;
 
     const BIN_ID = "6a9638f1f5f4af5e295a7630";
     const MASTER_KEY = "$2a$10$uWA6RwV4hxUT6D49HU56VuPjVsoNcHcTmf.jSgx.o6RXd2G1wGyse"; 
@@ -475,6 +755,34 @@
         if (c.length === 3) c = c.split('').map(x => x + x).join('');
         const num = parseInt(c, 16);
         return `rgba(${num >> 16}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+    };
+
+    const getDepthConfig = (depthName) => {
+        const lower = (depthName || '').trim().toLowerCase();
+        if (lower === 'new contact') {
+            return { color: '#888888', bg: hexToRgba('#888888', 0.15), icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>` };
+        } else if (lower === 'meaningful') {
+            return { color: '#C9AB5C', bg: hexToRgba('#C9AB5C', 0.15), icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>` };
+        } else if (lower === 'b-study') {
+            return { color: '#6CA6C1', bg: hexToRgba('#6CA6C1', 0.15), icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M6 6h10"></path><path d="M6 10h10"></path></svg>` };
+        } else if (lower === 'disciple') {
+            return { color: '#376D48', bg: hexToRgba('#376D48', 0.15), icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>` };
+        }
+        return { color: '#CAAC5C', bg: hexToRgba('#CAAC5C', 0.15), icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>` };
+    };
+
+    const updateTabUI = () => {
+        const containers = [tabSelector, tabSelectorMobile];
+        containers.forEach(container => {
+            if (!container) return;
+            container.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.view === currentView) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        });
     };
 
     const loadPrayers = async () => {
@@ -491,6 +799,7 @@
                     depth_chart: record.depth_chart || []
                 };
             }
+            updateTabUI();
             render();
         } catch (err) { console.error("Error loading data:", err); }
     };
@@ -506,34 +815,56 @@
     };
 
     const savePrayer = async () => {
-        const name = nameInput.value;
-        const date = dateInput.value;
-        const request = requestInput.value;
         const editIndex = editIndexInput.value;
         const archived = archivedCheckbox.checked;
-        const currentCategory = pageSelector.value;
 
-        if(!name) { alert('Please fill out the name field.'); return; }
-        const finalRequest = request.trim() === '' ? '' : request;
+        if (currentView === 'depth_chart') {
+            const name = dcNameInput.value.trim();
+            if(!name) { alert('Please fill out the name field.'); return; }
+            const finalRequest = selectedDepthValue || 'New Contact';
 
-        if (!allData[currentCategory]) {
-            allData[currentCategory] = [];
-        }
+            if (!allData[currentView]) allData[currentView] = [];
 
-        if (editIndex !== '') {
-            allData[currentCategory][editIndex] = { ...allData[currentCategory][editIndex], name, date, request: finalRequest, archived };
+            if (editIndex !== '') {
+                allData[currentView][editIndex] = { ...allData[currentView][editIndex], name, request: finalRequest, archived };
+            } else {
+                allData[currentView].push({ name, date: new Date().toISOString().split('T')[0], request: finalRequest, lastPrayed: null, archived: false });
+            }
         } else {
-            allData[currentCategory].push({ name, date, request: finalRequest, lastPrayed: null, archived: false });
+            const name = nameInput.value.trim();
+            const date = dateInput.value;
+            const request = requestInput.value;
+
+            if(!name) { alert('Please fill out the name field.'); return; }
+            const finalRequest = request.trim() === '' ? '' : request;
+
+            if (!allData[currentView]) allData[currentView] = [];
+
+            if (editIndex !== '') {
+                allData[currentView][editIndex] = { ...allData[currentView][editIndex], name, date, request: finalRequest, archived };
+            } else {
+                allData[currentView].push({ name, date, request: finalRequest, lastPrayed: null, archived: false });
+            }
         }
 
+        selectedIndices.clear();
+        await persistToJSONbin();
+        closeModal();
+        render();
+    };
+
+    const deletePrayer = async (index) => {
+        if(!confirm("Are you sure you want to permanently delete this prayer request?")) return;
+        allData[currentView].splice(index, 1);
+        selectedIndices.clear();
         await persistToJSONbin();
         closeModal();
         render();
     };
 
     const markPrayed = async (index, cardElement) => {
-        const currentCategory = pageSelector.value;
-        allData[currentCategory][index].lastPrayed = new Date().toISOString();
+        if (bulkSelectionActive) return; // Prevent praying during bulk mode selection
+        allData[currentView][index].lastPrayed = new Date().toISOString();
         prayedCache.add(index);
         
         const firstPositions = capturePositions();
@@ -592,8 +923,7 @@
     };
 
     const getSortedPrayers = () => {
-        const currentCategory = pageSelector.value;
-        const currentList = allData[currentCategory] || [];
+        const currentList = allData[currentView] || [];
         return currentList
             .map((p, i) => ({ ...p, originalIndex: i, id: `card-${i}` }))
             .filter(p => !p.archived)
@@ -605,11 +935,23 @@
             });
     }
 
+    const updateBulkToolbar = () => {
+        if (bulkSelectionActive) {
+            logoIMG.classList.add('hidden');
+            activeLogoCheckContainer.classList.remove('hidden');
+            bulkArchiveBtn.style.display = 'flex';
+            bulkArchiveBtn.innerText = `Archive Selected (${selectedIndices.size})`;
+        } else {
+            logoIMG.classList.remove('hidden');
+            activeLogoCheckContainer.classList.add('hidden');
+            bulkArchiveBtn.style.display = 'none';
+        }
+    };
+
     const render = () => {
         let firstPositions = capturePositions();
         viewArea.innerHTML = ''; 
         const sorted = getSortedPrayers();
-        const currentCategory = pageSelector.value;
         
         const prayedItems = sorted.filter(p => p.lastPrayed);
         const times = prayedItems.map(p => new Date(p.lastPrayed).getTime());
@@ -618,23 +960,30 @@
 
         sorted.forEach((item) => {
             let opacity = 0;
-            if (item.lastPrayed && currentCategory !== 'depth_chart') {
+            if (item.lastPrayed && currentView !== 'depth_chart') {
                 const time = new Date(item.lastPrayed).getTime();
                 opacity = maxTime === minTime ? 1 : (time - minTime) / (maxTime - minTime);
             }
-            viewArea.appendChild(createCardMarkup(item, item.originalIndex, opacity, prayedCache.has(item.originalIndex), currentCategory));
+            viewArea.appendChild(createCardMarkup(item, item.originalIndex, opacity, prayedCache.has(item.originalIndex), currentView));
         });
         flipAnimate(firstPositions);
+        updateBulkToolbar();
     }
 
-    const createCardMarkup = (prayer, index, opacity, isTempPrayed, currentCategory) => {
+    const createCardMarkup = (prayer, index, opacity, isTempPrayed, viewType) => {
         const card = document.createElement('div');
         card.classList.add('prayer-card');
+        if (bulkSelectionActive) {
+            card.classList.add('selectable');
+        }
         card.dataset.id = prayer.id;
         
         if (isTempPrayed) card.style.opacity = '0.5';
+        if (selectedIndices.has(index)) {
+            card.classList.add('selected-card');
+        }
 
-        const isDepthChart = currentCategory === 'depth_chart';
+        const isDepthChart = viewType === 'depth_chart';
         if (isDepthChart) {
             card.classList.add('depth-chart-card');
         }
@@ -645,26 +994,10 @@
         let textColor = '#888888';
 
         if (isDepthChart) {
-            const reqLower = (prayer.request || '').trim().toLowerCase();
-            let baseHex = '';
-            
-            if (reqLower === 'new contact') {
-                baseHex = '#CAAC5C'; // Gold
-            } else if (reqLower === 'meaningful') {
-                baseHex = '#008080'; // Teal
-            } else if (reqLower === 'b-study') {
-                baseHex = '#00437A'; // Navy
-            } else if (reqLower === 'disciple') {
-                baseHex = '#4A4A4A'; // Dark Gray
-            } else if (!isNeverPrayed) {
-                baseHex = '#CAAC5C';
-            }
-
-            if (baseHex) {
-                borderColor = baseHex;
-                textColor = baseHex;
-                bgColor = hexToRgba(baseHex, 0.15);
-            }
+            const cfg = getDepthConfig(prayer.request);
+            borderColor = cfg.color;
+            textColor = cfg.color;
+            bgColor = cfg.bg;
         } else {
             bgColor = isNeverPrayed ? 'transparent' : `rgba(202, 172, 92, ${0.2 + (0.8 * opacity)})`;
             textColor = isNeverPrayed ? '#888888' : (opacity > 0.5 ? '#FFFFFF' : 'var(--secondary-accent)');
@@ -672,6 +1005,7 @@
         }
 
         const pillText = isDepthChart ? (prayer.request || 'PRAY NOW') : getRelativeTime(prayer.lastPrayed);
+        const pillIcon = isDepthChart ? getDepthConfig(prayer.request).icon : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
         
         card.innerHTML = `
             <div class="card-header"><div class="card-name">${escapeHtml(prayer.name)}</div></div>
@@ -680,7 +1014,7 @@
             <div class="card-actions">
                 <div class="prayed-counter" onclick="markPrayed(${index}, this.closest('.prayer-card'))" 
                      style="background-color: ${bgColor}; border-color: ${borderColor}; color: ${textColor}">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"></path></svg>
+                    ${pillIcon}
                     <span>${escapeHtml(pillText)}</span>
                 </div>
                 <button class="icon-btn edit-btn" onclick="openEdit(${index})">
@@ -688,17 +1022,63 @@
                 </button>
             </div>
         `;
+
+        card.onclick = (e) => {
+            if (!bulkSelectionActive) return; // Only allow selection if bulk archive mode is enabled via the checkmark
+            if (e.target.closest('.prayed-counter') || e.target.closest('.icon-btn')) return;
+            
+            if (selectedIndices.has(index)) {
+                selectedIndices.delete(index);
+                card.classList.remove('selected-card');
+            } else {
+                selectedIndices.add(index);
+                card.classList.add('selected-card');
+            }
+            updateBulkToolbar();
+        };
+
         return card;
     }
 
+    const setDepthPickerSelection = (depthVal) => {
+        selectedDepthValue = depthVal || 'New Contact';
+        depthPickerGroup.querySelectorAll('.depth-option-pill').forEach(pill => {
+            const pDepth = pill.dataset.depth;
+            const cfg = getDepthConfig(pDepth);
+            if (pDepth.toLowerCase() === selectedDepthValue.toLowerCase()) {
+                pill.style.backgroundColor = cfg.color;
+                pill.style.color = '#FFFFFF';
+                pill.style.borderColor = cfg.color;
+            } else {
+                pill.style.backgroundColor = 'transparent';
+                pill.style.color = cfg.color;
+                pill.style.borderColor = cfg.color;
+            }
+        });
+    };
+
     const openModal = (editing = false) => {
         modal.style.display = 'flex';
+        const isDepthChart = currentView === 'depth_chart';
+        
+        if (isDepthChart) {
+            standardFormFields.style.display = 'none';
+            depthChartFormFields.style.display = 'block';
+        } else {
+            standardFormFields.style.display = 'block';
+            depthChartFormFields.style.display = 'none';
+        }
+
         if(!editing) {
             dateInput.value = new Date().toISOString().split('T')[0];
-            modalTitle.innerText = "New Prayer Request";
+            modalTitle.innerText = isDepthChart ? "New Depth Chart Contact" : "New Prayer Request";
             submitBtn.innerText = "Save";
             editIndexInput.value = ''; 
             archiveGroup.style.display = 'none'; 
+            deleteModalBtn.classList.add('hidden');
+            if (isDepthChart) setDepthPickerSelection('New Contact');
+        } else {
+            deleteModalBtn.classList.remove('hidden');
         }
     };
 
@@ -706,21 +1086,28 @@
         modal.style.display = 'none';
         nameInput.value = '';
         requestInput.value = '';
+        dcNameInput.value = '';
         editIndexInput.value = '';
         archivedCheckbox.checked = false;
     };
 
     const openEdit = (index) => {
-        const currentCategory = pageSelector.value;
-        const prayer = allData[currentCategory][index];
-        modalTitle.innerText = "Edit Prayer Request";
+        const prayer = allData[currentView][index];
+        modalTitle.innerText = currentView === 'depth_chart' ? "Edit Depth Chart Contact" : "Edit Prayer Request";
         submitBtn.innerText = "Update";
-        nameInput.value = prayer.name;
-        dateInput.value = prayer.date;
-        requestInput.value = prayer.request;
         editIndexInput.value = index;
         archivedCheckbox.checked = prayer.archived || false;
         archiveGroup.style.display = 'flex'; 
+
+        if (currentView === 'depth_chart') {
+            dcNameInput.value = prayer.name;
+            setDepthPickerSelection(prayer.request);
+        } else {
+            nameInput.value = prayer.name;
+            dateInput.value = prayer.date;
+            requestInput.value = prayer.request;
+        }
+
         openModal(true);
     };
 
@@ -731,11 +1118,63 @@
 
     const escapeHtml = (unsafe) => (unsafe || '').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 
+    // Event Listeners for Tabs
+    const handleTabChange = (view) => {
+        currentView = view;
+        localStorage.setItem('activePrayerTab', currentView);
+        selectedIndices.clear();
+        bulkSelectionActive = false;
+        updateTabUI();
+        render();
+    };
+
+    tabSelector.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = () => handleTabChange(btn.dataset.view);
+    });
+
+    if (tabSelectorMobile) {
+        tabSelectorMobile.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.onclick = () => handleTabChange(btn.dataset.view);
+        });
+    }
+
+    // Logo click to toggle bulk mode
+    logoToggleArea.onclick = () => {
+        bulkSelectionActive = !bulkSelectionActive;
+        if (!bulkSelectionActive) {
+            selectedIndices.clear();
+        }
+        render();
+    };
+
+    // Depth Pills Selection click handling in Modal
+    depthPickerGroup.querySelectorAll('.depth-option-pill').forEach(pill => {
+        pill.onclick = () => {
+            setDepthPickerSelection(pill.dataset.depth);
+        };
+    });
+
+    // Bulk Archive
+    bulkArchiveBtn.onclick = async () => {
+        if (selectedIndices.size === 0) return;
+        if (!confirm(`Are you sure you want to archive ${selectedIndices.size} selected item(s)?`)) return;
+        
+        selectedIndices.forEach(index => {
+            if (allData[currentView][index]) {
+                allData[currentView][index].archived = true;
+            }
+        });
+        selectedIndices.clear();
+        bulkSelectionActive = false;
+        await persistToJSONbin();
+        render();
+    };
+
     openBtn.onclick = () => openModal();
     closeBtn.onclick = (e) => { e.preventDefault(); closeModal(); }; 
     submitBtn.onclick = (e) => { e.preventDefault(); savePrayer(); }; 
+    deleteModalBtn.onclick = (e) => { e.preventDefault(); deletePrayer(editIndexInput.value); };
     window.onclick = (event) => { if (event.target == modal) closeModal(); };
-    pageSelector.onchange = () => { render(); };
 
     loadPrayers();
 </script>
