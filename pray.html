@@ -48,22 +48,20 @@
 
         /* HEADER SECTION */
         header {
-        padding-top:10px;
+            padding-top: 10px;
             background: var(--bg-color);
             position: sticky;
             top: 0;
             z-index: 200;
         }
 
-
         header h1 {
-        padding:20px;
-            font-family: var(--body-font:);
+            padding: 20px;
+            font-family: var(--body-font);
             color: var(--primary-accent);
-            text-transform:uppercase;
+            text-transform: uppercase;
             font-size: 1em;
-            line-spacing:0;
-            letter-spacing:1px;
+            letter-spacing: 1px;
             margin: 0;
         }
 
@@ -71,10 +69,33 @@
             width: 100%;
             border: 0;
             border-top: 2px solid var(--primary-accent);
-            opacity:0.2;
+            opacity: 0.2;
             margin-top: 10px;
-            padding:0;
-            margin-bottom:0;
+            padding: 0;
+            margin-bottom: 0;
+        }
+
+        /* PAGE SELECTOR DROPDOWN STYLING */
+        #pageSelector {
+            font-family: var(--body-font);
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--primary-accent);
+            background-color: var(--card-bg);
+            border: 1px solid #DDDDDD;
+            border-radius: var(--radius-btn);
+            padding: 8px 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        #pageSelector option {
+            background-color: var(--card-bg);
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* MAIN ACTION BUTTON (Floating Style) */
@@ -96,23 +117,20 @@
             gap: 8px;
             width: fit-content;
             position: fixed;
-            right:20px;
+            right: 20px;
             bottom: 20px;
             margin: 0;
             z-index: 100;
-            padding-right:20px;
-            
+            padding-right: 20px;
         }
         
-        #logoIMG{
-        	padding-left:20px;
-        	transform: scale(0.8, 0.8);
-            }
-
+        #logoIMG {
+            padding-left: 20px;
+            transform: scale(0.8, 0.8);
+        }
 
         /* CARD VIEW AREA */
         #prayerCardsView {
-        
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
@@ -145,32 +163,37 @@
             transition: transform 0s, opacity 0s;
         }
 
+        .prayer-card.depth-chart-card {
+            height: 180px;
+            padding: 20px 30px;
+        }
+
         .card-header {
             margin-bottom: 10px;
         }
 
         .card-name {
-            opacity:0.8;
-            font-family:Yrsa, serif;
+            opacity: 0.8;
+            font-family: Yrsa, serif;
             font-weight: 600;
             font-size: 2em;
-            line-height:1;
+            line-height: 1;
         }
 
         .card-date {
             font-size: 0.85em;
             color: #777;
             margin-top: 2px;
-            text-transform:uppercase;
-            letter-spacing:0.6pt;
-            margin-bottom:13px;
-            opacity:0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.6pt;
+            margin-bottom: 13px;
+            opacity: 0.7;
         }
 
         .card-body {
             font-size: 1.3em;
             color: #555;
-            opacity:0.8;
+            opacity: 0.8;
             line-height: 1.4;
             margin-bottom: 15px;
             flex-grow: 1; 
@@ -189,6 +212,11 @@
             align-items: center;
             border-top: 1px solid #EEEEEE;
             padding-top: 10px;
+        }
+
+        .prayer-card.depth-chart-card .card-actions {
+            border-top: none;
+            padding-top: 0;
         }
 
         /* MODAL (OVERLAY AND FORM) */
@@ -344,10 +372,15 @@
             gap: 6px;
             border: 2px solid #EEEEEE;
             border-radius: var(--radius-btn);
-            padding: 6px 12px;
+            padding: 6px 16px;
             color: #888888;
             cursor: pointer;
             transition: color 0.2s, background 0.2s, border-color 0.2s;
+        }
+
+        .prayed-counter span {
+            text-transform: uppercase;
+            letter-spacing: 0.6pt;
         }
         
         /* UTILITY */
@@ -361,7 +394,7 @@
             #prayerCardsView {
                 display: grid;
                 grid-template-columns: 1fr;
-                padding:20px 20px 50px 20px;
+                padding: 20px 20px 50px 20px;
             }
         }
     </style>
@@ -372,7 +405,7 @@
 <header>
     <div style="display: flex; justify-content: space-between; align-items: center;">
     <img id="logoIMG" src="https://focus.org/wp-content/uploads/2023/03/cropped-focusicon-192x192.png" alt="Logo" style="height: 40px; width: auto; object-fit: contain;">
-        <select id="pageSelector" style="font-family: var(--body-font); font-size: 1em; font-weight: 600; color: var(--primary-accent); background: none; border: 1px solid var(--primary-accent); border-radius: var(--radius-input); padding: 5px 10px; cursor: pointer;">
+        <select id="pageSelector">
             <option value="mpd">MPD</option>
             <option value="personal">Personal</option>
             <option value="depth_chart">Depth Chart</option>
@@ -382,8 +415,6 @@
     <hr>
 </header>
     <div id="prayerCardsView"></div>
-
-   
 </div>
 
 <div id="prayerModal" class="modal">
@@ -400,7 +431,7 @@
         </div>
         <div class="input-group">
             <label for="pRequest">Prayer Request</label>
-            <textarea id="pRequest" rows="4" placeholder="Your intention here..." required></textarea>
+            <textarea id="pRequest" rows="4" placeholder="Your intention here... (Optional for Depth Chart)"></textarea>
         </div>
         <div class="archive-checkbox-group" id="archiveGroup" style="display: none;">
             <input type="checkbox" id="pArchived">
@@ -439,12 +470,18 @@
     const MASTER_KEY = "$2a$10$uWA6RwV4hxUT6D49HU56VuPjVsoNcHcTmf.jSgx.o6RXd2G1wGyse"; 
     const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
+    const hexToRgba = (hex, alpha) => {
+        let c = hex.replace('#', '');
+        if (c.length === 3) c = c.split('').map(x => x + x).join('');
+        const num = parseInt(c, 16);
+        return `rgba(${num >> 16}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+    };
+
     const loadPrayers = async () => {
         try {
             const response = await fetch(BASE_URL, { headers: { "X-Master-Key": MASTER_KEY } });
             const result = await response.json();
             const record = result.record || {};
-            // Handle backwards compatibility if record is an array
             if (Array.isArray(record)) {
                 allData = { mpd: record, personal: [], depth_chart: [] };
             } else {
@@ -476,16 +513,17 @@
         const archived = archivedCheckbox.checked;
         const currentCategory = pageSelector.value;
 
-        if(!name || !request) { alert('Please fill out the name and request fields.'); return; }
+        if(!name) { alert('Please fill out the name field.'); return; }
+        const finalRequest = request.trim() === '' ? '' : request;
 
         if (!allData[currentCategory]) {
             allData[currentCategory] = [];
         }
 
         if (editIndex !== '') {
-            allData[currentCategory][editIndex] = { ...allData[currentCategory][editIndex], name, date, request, archived };
+            allData[currentCategory][editIndex] = { ...allData[currentCategory][editIndex], name, date, request: finalRequest, archived };
         } else {
-            allData[currentCategory].push({ name, date, request, lastPrayed: null, archived: false });
+            allData[currentCategory].push({ name, date, request: finalRequest, lastPrayed: null, archived: false });
         }
 
         await persistToJSONbin();
@@ -571,6 +609,7 @@
         let firstPositions = capturePositions();
         viewArea.innerHTML = ''; 
         const sorted = getSortedPrayers();
+        const currentCategory = pageSelector.value;
         
         const prayedItems = sorted.filter(p => p.lastPrayed);
         const times = prayedItems.map(p => new Date(p.lastPrayed).getTime());
@@ -579,35 +618,70 @@
 
         sorted.forEach((item) => {
             let opacity = 0;
-            if (item.lastPrayed) {
+            if (item.lastPrayed && currentCategory !== 'depth_chart') {
                 const time = new Date(item.lastPrayed).getTime();
                 opacity = maxTime === minTime ? 1 : (time - minTime) / (maxTime - minTime);
             }
-            viewArea.appendChild(createCardMarkup(item, item.originalIndex, opacity, prayedCache.has(item.originalIndex)));
+            viewArea.appendChild(createCardMarkup(item, item.originalIndex, opacity, prayedCache.has(item.originalIndex), currentCategory));
         });
         flipAnimate(firstPositions);
     }
 
-    const createCardMarkup = (prayer, index, opacity, isTempPrayed) => {
+    const createCardMarkup = (prayer, index, opacity, isTempPrayed, currentCategory) => {
         const card = document.createElement('div');
         card.classList.add('prayer-card');
         card.dataset.id = prayer.id;
         
         if (isTempPrayed) card.style.opacity = '0.5';
+
+        const isDepthChart = currentCategory === 'depth_chart';
+        if (isDepthChart) {
+            card.classList.add('depth-chart-card');
+        }
         
         const isNeverPrayed = !prayer.lastPrayed;
-        const bgColor = isNeverPrayed ? 'transparent' : `rgba(202, 172, 92, ${0.2 + (0.8 * opacity)})`;
-        const textColor = isNeverPrayed ? '#888888' : (opacity > 0.5 ? '#FFFFFF' : 'var(--secondary-accent)');
+        let bgColor = 'transparent';
+        let borderColor = '#EEEEEE';
+        let textColor = '#888888';
+
+        if (isDepthChart) {
+            const reqLower = (prayer.request || '').trim().toLowerCase();
+            let baseHex = '';
+            
+            if (reqLower === 'new contact') {
+                baseHex = '#CAAC5C'; // Gold
+            } else if (reqLower === 'meaningful') {
+                baseHex = '#008080'; // Teal
+            } else if (reqLower === 'b-study') {
+                baseHex = '#00437A'; // Navy
+            } else if (reqLower === 'disciple') {
+                baseHex = '#4A4A4A'; // Dark Gray
+            } else if (!isNeverPrayed) {
+                baseHex = '#CAAC5C';
+            }
+
+            if (baseHex) {
+                borderColor = baseHex;
+                textColor = baseHex;
+                bgColor = hexToRgba(baseHex, 0.15);
+            }
+        } else {
+            bgColor = isNeverPrayed ? 'transparent' : `rgba(202, 172, 92, ${0.2 + (0.8 * opacity)})`;
+            textColor = isNeverPrayed ? '#888888' : (opacity > 0.5 ? '#FFFFFF' : 'var(--secondary-accent)');
+            borderColor = isNeverPrayed ? '#EEEEEE' : 'var(--secondary-accent)';
+        }
+
+        const pillText = isDepthChart ? (prayer.request || 'PRAY NOW') : getRelativeTime(prayer.lastPrayed);
         
         card.innerHTML = `
             <div class="card-header"><div class="card-name">${escapeHtml(prayer.name)}</div></div>
-            <div class="card-body">${escapeHtml(prayer.request)}</div>
-            <div class="card-date">${formatDate(prayer.date)}</div>
+            ${!isDepthChart ? `<div class="card-body">${escapeHtml(prayer.request)}</div>` : ''}
+            ${!isDepthChart ? `<div class="card-date">${formatDate(prayer.date)}</div>` : ''}
             <div class="card-actions">
                 <div class="prayed-counter" onclick="markPrayed(${index}, this.closest('.prayer-card'))" 
-                     style="background-color: ${bgColor}; border-color: ${isNeverPrayed ? '#EEEEEE' : 'var(--secondary-accent)'}; color: ${textColor}">
+                     style="background-color: ${bgColor}; border-color: ${borderColor}; color: ${textColor}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"></path></svg>
-                    <span>${getRelativeTime(prayer.lastPrayed)}</span>
+                    <span>${escapeHtml(pillText)}</span>
                 </div>
                 <button class="icon-btn edit-btn" onclick="openEdit(${index})">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -655,7 +729,7 @@
         return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-    const escapeHtml = (unsafe) => unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    const escapeHtml = (unsafe) => (unsafe || '').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 
     openBtn.onclick = () => openModal();
     closeBtn.onclick = (e) => { e.preventDefault(); closeModal(); }; 
