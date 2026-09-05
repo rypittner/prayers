@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Person</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 35px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 600;
+        }
+
+        .required {
+            color: #c62828;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: inherit;
+            background: white;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 25px;
+            margin-top: 8px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .radio-option input {
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #333;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #222;
+        }
+
+        #successMessage {
+            display: none;
+            margin-top: 25px;
+            padding: 15px;
+            background: #e8f5e9;
+            border: 1px solid #81c784;
+            border-radius: 4px;
+            color: #2e7d32;
+        }
+
+        #peopleList {
+            margin-top: 30px;
+        }
+
+        .person {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
+
+        .person-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .person-details {
+            color: #555;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Add Person</h1>
+
+    <form id="personForm">
+
+        <!-- First Name -->
+        <div class="form-group">
+            <label for="firstName">
+                First Name <span class="required">*</span>
+            </label>
+
+            <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                placeholder="First Name"
+                required
+            >
+        </div>
+
+
+        <!-- Last Name -->
+        <div class="form-group">
+            <label for="lastName">
+                Last Name <span class="required">*</span>
+            </label>
+
+            <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                placeholder="Last Name"
+                required
+            >
+        </div>
+
+
+        <!-- Non-.edu Email -->
+        <div class="form-group">
+            <label for="email">
+                Email (non .edu)
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+            >
+        </div>
+
+
+        <!-- .edu Email -->
+        <div class="form-group">
+            <label for="eduEmail">
+                Email (optional .edu)
+            </label>
+
+            <input
+                type="email"
+                id="eduEmail"
+                name="eduEmail"
+                placeholder="Email"
+            >
+        </div>
+
+
+        <!-- Phone -->
+        <div class="form-group">
+            <label for="phone">
+                Phone
+            </label>
+
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="Phone"
+            >
+        </div>
+
+
+        <!-- Gender -->
+        <div class="form-group">
+            <label for="gender">
+                Gender <span class="required">*</span>
+            </label>
+
+            <select
+                id="gender"
+                name="gender"
+                required
+            >
+                <option value="">Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+
+
+        <!-- School Year -->
+        <div class="form-group">
+            <label for="schoolYear">
+                School Year <span class="required">*</span>
+            </label>
+
+            <select
+                id="schoolYear"
+                name="schoolYear"
+                required
+            >
+                <option value="">School Year</option>
+                <option value="Freshman">Freshman</option>
+                <option value="Sophomore">Sophomore</option>
+                <option value="Junior">Junior</option>
+                <option value="Senior">Senior</option>
+                <option value="Senior+">Senior+</option>
+                <option value="Grad Student">Grad Student</option>
+                <option value="Graduated Alumni">Graduated Alumni</option>
+                <option value="Non-student">Non-student</option>
+            </select>
+        </div>
+
+
+        <!-- Varsity Sport -->
+        <div class="form-group">
+
+            <label>
+                Does this person play a varsity sport?
+                <span class="required">*</span>
+            </label>
+
+            <div class="radio-group">
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="varsitySport"
+                        value="Yes"
+                        required
+                    >
+                    Yes
+                </label>
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="varsitySport"
+                        value="No"
+                    >
+                    No
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- Fraternity / Sorority -->
+        <div class="form-group">
+
+            <label>
+                Is this person in a fraternity or sorority?
+                <span class="required">*</span>
+            </label>
+
+            <div class="radio-group">
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="fraternitySorority"
+                        value="Yes"
+                        required
+                    >
+                    Yes
+                </label>
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="fraternitySorority"
+                        value="No"
+                    >
+                    No
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- Notes -->
+        <div class="form-group">
+
+            <label for="notes">
+                My notes
+            </label>
+
+            <textarea
+                id="notes"
+                name="notes"
+                placeholder="Notes"
+            ></textarea>
+
+        </div>
+
+
+        <!-- Submit -->
+        <button type="submit">
+            Add Person
+        </button>
+
+    </form>
+
+
+    <!-- Success Message -->
+    <div id="successMessage">
+        Person successfully added!
+    </div>
+
+
+    <!-- Added People -->
+    <div id="peopleList"></div>
+
+</div>
+
+
+<script>
+
+    const form = document.getElementById("personForm");
+    const successMessage = document.getElementById("successMessage");
+    const peopleList = document.getElementById("peopleList");
+
+    form.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        // Get form values
+        const firstName = document.getElementById("firstName").value;
+        const lastName = document.getElementById("lastName").value;
+
+        const email = document.getElementById("email").value;
+        const eduEmail = document.getElementById("eduEmail").value;
+        const phone = document.getElementById("phone").value;
+
+        const gender = document.getElementById("gender").value;
+        const schoolYear = document.getElementById("schoolYear").value;
+
+        const varsitySport =
+            document.querySelector(
+                'input[name="varsitySport"]:checked'
+            ).value;
+
+        const fraternitySorority =
+            document.querySelector(
+                'input[name="fraternitySorority"]:checked'
+            ).value;
+
+        const notes = document.getElementById("notes").value;
+
+
+        // Show success message
+        successMessage.style.display = "block";
+
+
+        // Add person to list below form
+        const person = document.createElement("div");
+        person.className = "person";
+
+        person.innerHTML = `
+            <div class="person-name">
+                ${firstName} ${lastName}
+            </div>
+
+            <div class="person-details">
+                Gender: ${gender}<br>
+                School Year: ${schoolYear}<br>
+                Varsity Sport: ${varsitySport}<br>
+                Fraternity/Sorority: ${fraternitySorority}
+            </div>
+        `;
+
+        peopleList.appendChild(person);
+
+
+        // Reset form
+        form.reset();
+
+
+        // Hide success message after 2 seconds
+        setTimeout(function() {
+            successMessage.style.display = "none";
+        }, 2000);
+
+    });
+
+</script>
+
+</body>
+</html>
