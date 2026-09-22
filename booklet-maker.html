@@ -3,371 +3,1328 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF Booklet Maker</title>
+
+<title>Booklet Studio — PDF Booklet Maker</title>
+
+<!-- Lato -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+>
 
 <style>
-    * {
-        box-sizing: border-box;
-    }
 
-    body {
-        margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background: #f3f4f6;
-        color: #222;
-    }
+:root {
+    --cream: #f8f3ea;
+    --cream-light: #fffdf9;
+    --cream-dark: #eee6d8;
 
-    header {
-        background: #111827;
-        color: white;
-        padding: 18px 24px;
-    }
+    --purple: #6d4cc2;
+    --purple-dark: #51359b;
+    --purple-light: #eee8fb;
+    --purple-pale: #f6f2fd;
 
-    header h1 {
-        margin: 0 0 5px;
-        font-size: 24px;
-    }
+    --ink: #292330;
+    --muted: #756d7d;
 
-    header p {
-        margin: 0;
-        color: #d1d5db;
-        font-size: 14px;
+    --border: #ded5e8;
+    --border-dark: #c9bdd7;
+
+    --green: #43866a;
+    --green-light: #e8f4ee;
+
+    --red: #b95757;
+    --red-light: #faecec;
+
+    --shadow:
+        0 12px 35px rgba(65, 46, 91, 0.08);
+
+    --shadow-small:
+        0 4px 16px rgba(65, 46, 91, 0.07);
+
+    --radius: 16px;
+    --radius-small: 10px;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    margin: 0;
+
+    font-family:
+        "Lato",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(112, 78, 194, 0.09),
+            transparent 32%
+        ),
+        var(--cream);
+
+    color: var(--ink);
+
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.hero {
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4f378e 0%,
+            #6d4cc2 48%,
+            #8568d2 100%
+        );
+
+    color: white;
+
+    padding:
+        46px
+        24px
+        44px;
+
+    overflow: hidden;
+}
+
+
+.hero::before {
+    content: "";
+
+    position: absolute;
+
+    width: 440px;
+    height: 440px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,0.07);
+
+    top: -260px;
+    right: -100px;
+}
+
+
+.hero::after {
+    content: "";
+
+    position: absolute;
+
+    width: 280px;
+    height: 280px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,0.05);
+
+    bottom: -210px;
+    left: -90px;
+}
+
+
+.hero-inner {
+    position: relative;
+    z-index: 1;
+
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+
+.brand-mark {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(255,255,255,0.15);
+
+    border:
+        1px solid rgba(255,255,255,0.25);
+
+    font-size: 22px;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.08);
+}
+
+
+.brand-name {
+    font-size: 13px;
+    font-weight: 800;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+
+    opacity: 0.85;
+}
+
+
+.hero h1 {
+    margin:
+        22px
+        0
+        10px;
+
+    font-size:
+        clamp(32px, 5vw, 52px);
+
+    line-height: 1.04;
+
+    font-weight: 900;
+
+    letter-spacing: -0.035em;
+}
+
+
+.hero p {
+    max-width: 690px;
+
+    margin: 0;
+
+    font-size: 17px;
+
+    line-height: 1.65;
+
+    color:
+        rgba(255,255,255,0.84);
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.container {
+    max-width: 1180px;
+
+    margin: 0 auto;
+
+    padding:
+        30px
+        20px
+        70px;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.panel {
+    background:
+        rgba(255,253,249,0.94);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    box-shadow:
+        var(--shadow);
+
+    padding:
+        24px;
+
+    margin-bottom:
+        20px;
+
+    backdrop-filter:
+        blur(8px);
+}
+
+
+.panel-header {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+
+.step-number {
+    flex:
+        0 0 auto;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        var(--purple-light);
+
+    color:
+        var(--purple-dark);
+
+    font-size: 14px;
+
+    font-weight: 900;
+}
+
+
+.panel-title {
+    margin: 0;
+
+    font-size: 20px;
+
+    font-weight: 800;
+
+    letter-spacing: -0.02em;
+}
+
+
+.panel-subtitle {
+    margin:
+        4px
+        0
+        0;
+
+    color:
+        var(--muted);
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
+
+    gap: 16px;
+}
+
+
+.control {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.control label {
+    font-size: 13px;
+
+    font-weight: 800;
+
+    color:
+        #4b4352;
+}
+
+
+select,
+input[type="number"],
+input[type="file"] {
+    width: 100%;
+
+    border:
+        1px solid var(--border-dark);
+
+    border-radius:
+        var(--radius-small);
+
+    background:
+        #fffdfa;
+
+    color:
+        var(--ink);
+
+    font-family:
+        inherit;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color .18s ease,
+        box-shadow .18s ease;
+}
+
+
+select,
+input[type="number"] {
+    min-height: 45px;
+
+    padding:
+        10px
+        12px;
+}
+
+
+input[type="file"] {
+    padding:
+        9px;
+}
+
+
+select:focus,
+input[type="number"]:focus,
+input[type="file"]:focus {
+    border-color:
+        var(--purple);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(109,76,194,0.12);
+}
+
+
+.help-text {
+    color:
+        var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   FILE DROP AREA
+========================================================= */
+
+.file-box {
+    border:
+        1.5px dashed
+        var(--border-dark);
+
+    border-radius:
+        14px;
+
+    padding:
+        25px;
+
+    background:
+        var(--purple-pale);
+
+    text-align: center;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease;
+}
+
+
+.file-box:hover {
+    border-color:
+        var(--purple);
+
+    background:
+        #f3edfd;
+}
+
+
+.file-icon {
+    width: 50px;
+    height: 50px;
+
+    margin:
+        0 auto
+        12px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background:
+        white;
+
+    color:
+        var(--purple);
+
+    box-shadow:
+        var(--shadow-small);
+
+    font-size: 23px;
+}
+
+
+.file-title {
+    font-size: 16px;
+
+    font-weight: 800;
+
+    margin-bottom: 5px;
+}
+
+
+.file-description {
+    color:
+        var(--muted);
+
+    font-size: 13px;
+
+    margin-bottom: 16px;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.button-row {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 9px;
+
+    margin-top: 18px;
+}
+
+
+button {
+    appearance: none;
+
+    border: 0;
+
+    border-radius:
+        10px;
+
+    min-height: 42px;
+
+    padding:
+        10px
+        16px;
+
+    font-family:
+        inherit;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease,
+        background .15s ease;
+
+    background:
+        var(--purple);
+
+    color:
+        white;
+
+    box-shadow:
+        0 5px 14px
+        rgba(109,76,194,0.18);
+}
+
+
+button:hover:not(:disabled) {
+    background:
+        var(--purple-dark);
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 7px 18px
+        rgba(109,76,194,0.23);
+}
+
+
+button:active:not(:disabled) {
+    transform:
+        translateY(0);
+}
+
+
+button.secondary {
+    background:
+        white;
+
+    color:
+        var(--purple-dark);
+
+    border:
+        1px solid var(--border-dark);
+
+    box-shadow:
+        none;
+}
+
+
+button.secondary:hover:not(:disabled) {
+    background:
+        var(--purple-pale);
+
+    border-color:
+        #ad9bc6;
+}
+
+
+button.success {
+    background:
+        var(--green);
+
+    box-shadow:
+        0 5px 14px
+        rgba(67,134,106,0.18);
+}
+
+
+button.success:hover:not(:disabled) {
+    background:
+        #347257;
+}
+
+
+button:disabled {
+    opacity:
+        0.45;
+
+    cursor:
+        not-allowed;
+
+    box-shadow:
+        none;
+
+    transform:
+        none;
+}
+
+
+/* =========================================================
+   INFO / STATUS
+========================================================= */
+
+.info-box {
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 17px;
+
+    padding:
+        14px
+        16px;
+
+    border-radius:
+        11px;
+
+    background:
+        var(--purple-pale);
+
+    border:
+        1px solid #e2d7f3;
+
+    color:
+        #55456c;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+.info-icon {
+    flex:
+        0 0 auto;
+
+    font-weight: 900;
+
+    color:
+        var(--purple);
+}
+
+
+.warning-box {
+    margin-top: 17px;
+
+    padding:
+        14px
+        16px;
+
+    border-radius:
+        11px;
+
+    background:
+        #fff7ec;
+
+    border:
+        1px solid #f0dcc1;
+
+    color:
+        #815c32;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+.status {
+    min-height: 20px;
+
+    margin-top: 14px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color:
+        var(--muted);
+}
+
+
+/* =========================================================
+   SELECTION TOOLBAR
+========================================================= */
+
+.selection-toolbar {
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-bottom: 17px;
+}
+
+
+.selection-count {
+    margin-left: auto;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 34px;
+
+    padding:
+        6px
+        11px;
+
+    border-radius:
+        999px;
+
+    background:
+        var(--purple-light);
+
+    color:
+        var(--purple-dark);
+
+    font-size: 12px;
+
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   PAGE GRID
+========================================================= */
+
+.page-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(190px, 1fr)
+        );
+
+    gap: 14px;
+}
+
+
+.page-card {
+    position: relative;
+
+    background:
+        #fffdfa;
+
+    border:
+        2px solid var(--border);
+
+    border-radius:
+        13px;
+
+    padding:
+        8px;
+
+    cursor:
+        pointer;
+
+    transition:
+        border-color .16s ease,
+        transform .16s ease,
+        box-shadow .16s ease;
+
+    overflow: hidden;
+}
+
+
+.page-card:hover {
+    border-color:
+        #b9a6d0;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        var(--shadow-small);
+}
+
+
+.page-card.selected {
+    border-color:
+        var(--purple);
+
+    box-shadow:
+        0 0 0 2px
+        rgba(109,76,194,0.08);
+}
+
+
+.page-card canvas {
+    width: 100%;
+
+    display: block;
+
+    background:
+        white;
+
+    border:
+        1px solid #e5dfea;
+
+    border-radius:
+        7px;
+}
+
+
+.page-label {
+    padding:
+        9px
+        4px
+        3px;
+
+    color:
+        #5b5263;
+
+    font-size: 12px;
+
+    line-height: 1.4;
+
+    font-weight: 700;
+}
+
+
+.checkmark {
+    position: absolute;
+
+    top: 14px;
+    right: 14px;
+
+    width: 27px;
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        #b9b0bf;
+
+    color:
+        white;
+
+    font-size: 14px;
+
+    font-weight: 900;
+
+    z-index: 2;
+
+    box-shadow:
+        0 3px 8px
+        rgba(0,0,0,0.12);
+}
+
+
+.page-card.selected .checkmark {
+    background:
+        var(--purple);
+}
+
+
+/* =========================================================
+   ORIENTATION VISUAL
+========================================================= */
+
+.orientation-card {
+    margin-top: 18px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(250px, 1fr)
+        );
+
+    gap: 12px;
+}
+
+
+.orientation-option {
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        12px;
+
+    padding:
+        13px;
+
+    background:
+        #fffdfa;
+}
+
+
+.orientation-option strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 13px;
+}
+
+
+.orientation-diagram {
+    margin-top: 10px;
+
+    border:
+        1px solid #cfc3d9;
+
+    background:
+        white;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    overflow: hidden;
+}
+
+
+.orientation-diagram.horizontal {
+    aspect-ratio:
+        11 / 8.5;
+}
+
+
+.orientation-diagram.vertical {
+    aspect-ratio:
+        8.5 / 11;
+}
+
+
+.orientation-diagram div {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-right:
+        1px dashed #aa9eb5;
+
+    color:
+        #7a6c86;
+
+    font-size: 9px;
+
+    text-align: center;
+}
+
+
+.orientation-diagram div:last-child {
+    border-right: none;
+}
+
+
+/* =========================================================
+   BOOKLET PREVIEW
+========================================================= */
+
+.booklet-preview {
+    display: grid;
+
+    gap: 22px;
+}
+
+
+.sheet-preview {
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        14px;
+
+    background:
+        #f7f2ea;
+
+    padding:
+        13px;
+}
+
+
+.sheet-title {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+
+    color:
+        #5d5367;
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.07em;
+}
+
+
+.sheet {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    background:
+        white;
+
+    border:
+        1px solid #c9bfce;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 6px 20px
+        rgba(67,48,85,0.08);
+}
+
+
+.sheet.horizontal {
+    aspect-ratio:
+        11 / 8.5;
+}
+
+
+.sheet.vertical {
+    aspect-ratio:
+        8.5 / 11;
+}
+
+
+.sheet-half {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 0;
+    min-height: 0;
+
+    overflow: hidden;
+
+    border-right:
+        1px dashed #aaa0b1;
+}
+
+
+.sheet-half:last-child {
+    border-right: none;
+}
+
+
+.sheet-half canvas {
+    display: block;
+
+    max-width:
+        100%;
+
+    max-height:
+        100%;
+}
+
+
+.blank-label {
+    color:
+        #aaa1af;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.sheet-page-number {
+    position: absolute;
+
+    bottom: 5px;
+
+    left: 0;
+    right: 0;
+
+    text-align: center;
+
+    color:
+        #aaa1af;
+
+    font-size: 9px;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+    padding:
+        35px
+        20px;
+
+    text-align: center;
+
+    border:
+        1px dashed var(--border-dark);
+
+    border-radius:
+        12px;
+
+    color:
+        var(--muted);
+
+    background:
+        #fcfaf6;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .hero {
+        padding:
+            34px
+            18px
+            34px;
     }
 
     .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 20px;
+        padding:
+            20px
+            12px
+            50px;
     }
 
     .panel {
-        background: white;
-        border-radius: 10px;
-        padding: 18px;
-        margin-bottom: 18px;
-        box-shadow: 0 1px 4px rgba(0,0,0,.08);
-    }
-
-    .panel h2 {
-        margin: 0 0 15px;
-        font-size: 18px;
-    }
-
-    .controls {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-        gap: 14px;
-    }
-
-    .control {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    label {
-        font-size: 13px;
-        font-weight: bold;
-    }
-
-    select,
-    input[type="number"],
-    input[type="file"] {
-        width: 100%;
-        padding: 9px;
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        background: white;
-        font-size: 14px;
-    }
-
-    input[type="file"] {
-        padding: 7px;
-    }
-
-    .button-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 15px;
-    }
-
-    button {
-        border: none;
-        border-radius: 6px;
-        padding: 10px 15px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 14px;
-        background: #2563eb;
-        color: white;
-    }
-
-    button:hover {
-        background: #1d4ed8;
-    }
-
-    button.secondary {
-        background: #64748b;
-    }
-
-    button.secondary:hover {
-        background: #475569;
-    }
-
-    button.success {
-        background: #16a34a;
-    }
-
-    button.success:hover {
-        background: #15803d;
-    }
-
-    button.danger {
-        background: #dc2626;
-    }
-
-    button.danger:hover {
-        background: #b91c1c;
-    }
-
-    button:disabled {
-        opacity: .5;
-        cursor: not-allowed;
-    }
-
-    .info {
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        color: #1e3a8a;
-        border-radius: 7px;
-        padding: 11px 13px;
-        margin-top: 14px;
-        font-size: 13px;
-        line-height: 1.5;
-    }
-
-    .warning {
-        background: #fff7ed;
-        border: 1px solid #fed7aa;
-        color: #9a3412;
-        border-radius: 7px;
-        padding: 11px 13px;
-        margin-top: 14px;
-        font-size: 13px;
-        line-height: 1.5;
-    }
-
-    .status {
-        margin-top: 12px;
-        font-size: 14px;
-        min-height: 20px;
-    }
-
-    .selection-bar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 15px;
-    }
-
-    .selection-count {
-        margin-left: auto;
-        font-weight: bold;
-        font-size: 14px;
+        padding:
+            18px;
+        border-radius:
+            13px;
     }
 
     .page-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 14px;
+        grid-template-columns:
+            repeat(
+                auto-fill,
+                minmax(140px, 1fr)
+            );
     }
 
-    .page-card {
-        border: 2px solid #d1d5db;
-        border-radius: 8px;
-        padding: 8px;
-        background: #f9fafb;
-        cursor: pointer;
-        transition: .15s;
-        position: relative;
-    }
-
-    .page-card:hover {
-        border-color: #94a3b8;
-    }
-
-    .page-card.selected {
-        border-color: #2563eb;
-        background: #eff6ff;
-    }
-
-    .page-card img {
+    .selection-count {
         width: 100%;
-        display: block;
-        background: white;
-        border: 1px solid #e5e7eb;
-        object-fit: contain;
-    }
 
-    .page-card canvas {
-        width: 100%;
-        display: block;
-        background: white;
-        border: 1px solid #e5e7eb;
-    }
+        margin-left: 0;
 
-    .page-label {
-        margin-top: 7px;
-        font-size: 12px;
-        color: #374151;
-        line-height: 1.35;
-    }
-
-    .checkmark {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        width: 25px;
-        height: 25px;
-        border-radius: 50%;
-        background: #9ca3af;
-        color: white;
-        display: flex;
         justify-content: center;
-        align-items: center;
-        font-weight: bold;
-        font-size: 14px;
     }
 
-    .page-card.selected .checkmark {
-        background: #2563eb;
+    .orientation-card {
+        grid-template-columns:
+            1fr;
     }
+}
 
-    .booklet-preview {
-        display: grid;
-        gap: 20px;
-    }
 
-    .sheet-preview {
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        padding: 10px;
-        background: #f8fafc;
-    }
+.hidden {
+    display: none !important;
+}
 
-    .sheet-title {
-        font-weight: bold;
-        font-size: 13px;
-        margin-bottom: 8px;
-    }
-
-    /*
-       IMPORTANT:
-       Both booklet orientations use TWO COLUMNS.
-
-       Horizontal:
-         landscape physical sheet
-         [ page ][ page ]
-
-       Vertical:
-         portrait physical sheet
-         [ page ][ page ]
-
-       There is intentionally NO vertical stacking of booklet pages.
-    */
-    .sheet {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        width: 100%;
-        aspect-ratio: 11 / 8.5;
-        border: 1px solid #94a3b8;
-        background: white;
-        overflow: hidden;
-    }
-
-    .sheet.vertical {
-        aspect-ratio: 8.5 / 11;
-    }
-
-    .sheet-half {
-        position: relative;
-        border-right: 1px dashed #94a3b8;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: white;
-    }
-
-    .sheet-half:last-child {
-        border-right: none;
-    }
-
-    .sheet-half canvas {
-        max-width: 100%;
-        max-height: 100%;
-        display: block;
-    }
-
-    .sheet-half .blank-label {
-        color: #9ca3af;
-        font-size: 12px;
-    }
-
-    .sheet-half .sheet-page-number {
-        position: absolute;
-        bottom: 3px;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 10px;
-        color: #9ca3af;
-        pointer-events: none;
-    }
-
-    .hidden {
-        display: none !important;
-    }
-
-    .small {
-        font-size: 12px;
-        color: #64748b;
-    }
-
-    .orientation-description {
-        font-size: 12px;
-        color: #64748b;
-        margin-top: 2px;
-        line-height: 1.35;
-    }
-
-    @media (max-width: 650px) {
-        .page-grid {
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        }
-
-        .selection-count {
-            width: 100%;
-            margin-left: 0;
-        }
-    }
 </style>
 </head>
 
+
 <body>
 
-<header>
-    <h1>PDF Booklet Maker</h1>
-    <p>Split, select, impose, and create a print-ready booklet PDF without rasterizing the final pages.</p>
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<header class="hero">
+
+    <div class="hero-inner">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                ✦
+            </div>
+
+            <div class="brand-name">
+                Booklet Studio
+            </div>
+
+        </div>
+
+
+        <h1>
+            Turn PDFs into print-ready booklets.
+        </h1>
+
+
+        <p>
+            Split pages when needed, choose exactly what you want,
+            and impose everything into a booklet without turning the
+            final PDF into screenshots.
+        </p>
+
+    </div>
+
 </header>
 
-<div class="container">
 
-    <!-- FILE -->
-    <div class="panel">
-        <h2>1. Upload PDF</h2>
+<main class="container">
+
+
+<!-- =========================================================
+     1. UPLOAD
+========================================================= -->
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div class="step-number">
+            1
+        </div>
+
+        <div>
+            <h2 class="panel-title">
+                Upload your PDF
+            </h2>
+
+            <p class="panel-subtitle">
+                Your original PDF is used for the final output.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="file-box">
+
+        <div class="file-icon">
+            ↑
+        </div>
+
+        <div class="file-title">
+            Choose a PDF file
+        </div>
+
+        <div class="file-description">
+            PDF previews are generated in your browser.
+            The final booklet uses native PDF page content.
+        </div>
 
         <input
             type="file"
@@ -375,236 +1332,580 @@
             accept="application/pdf"
         >
 
-        <div class="status" id="fileStatus"></div>
+        <div
+            class="status"
+            id="fileStatus"
+        ></div>
 
-        <div class="info">
-            PDF.js is used only to create the on-screen previews.
-            The final PDF is built from the original PDF page content using
-            <strong>pdf-lib</strong>. Preview screenshots are never inserted
-            into the final booklet.
-        </div>
     </div>
 
 
-    <!-- SPLITTING -->
-    <div class="panel">
-        <h2>2. Page Splitting</h2>
+    <div class="info-box">
 
-        <div class="controls">
+        <div class="info-icon">
+            i
+        </div>
 
-            <div class="control">
-                <label for="splitMode">Split pages</label>
+        <div>
+            <strong>No-raster final output.</strong>
+            The preview thumbnails may be rasterized for display,
+            but those thumbnails are never placed into the final PDF.
+            The booklet is constructed from the original PDF pages.
+        </div>
 
-                <select id="splitMode">
-                    <option value="none">None — use whole pages</option>
-                    <option value="left-right">Left / Right</option>
-                    <option value="top-bottom">Top / Bottom</option>
-                </select>
+    </div>
 
-                <div class="orientation-description">
-                    With <strong>None</strong>, each original PDF page becomes one selectable booklet page.
+</section>
+
+
+<!-- =========================================================
+     2. SPLITTING
+========================================================= -->
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div class="step-number">
+            2
+        </div>
+
+        <div>
+            <h2 class="panel-title">
+                Choose how pages are handled
+            </h2>
+
+            <p class="panel-subtitle">
+                You can use whole pages or split every page into halves.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="controls">
+
+        <div class="control">
+
+            <label for="splitMode">
+                Page splitting
+            </label>
+
+            <select id="splitMode">
+
+                <option value="none">
+                    None — use whole pages
+                </option>
+
+                <option value="left-right">
+                    Left / Right
+                </option>
+
+                <option value="top-bottom">
+                    Top / Bottom
+                </option>
+
+            </select>
+
+            <div class="help-text">
+                With <strong>None</strong>, every original PDF page
+                becomes one selectable booklet page.
+            </div>
+
+        </div>
+
+
+        <div class="control">
+
+            <label for="previewScale">
+                Preview resolution
+            </label>
+
+            <select id="previewScale">
+
+                <option value="1">
+                    Low
+                </option>
+
+                <option value="1.5" selected>
+                    Medium
+                </option>
+
+                <option value="2">
+                    High
+                </option>
+
+                <option value="3">
+                    Very High
+                </option>
+
+            </select>
+
+            <div class="help-text">
+                Only affects the browser preview.
+                It does not determine final PDF quality.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="button-row">
+
+        <button
+            id="reloadPreviewBtn"
+            class="secondary"
+        >
+            Rebuild Preview
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     3. SELECT
+========================================================= -->
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div class="step-number">
+            3
+        </div>
+
+        <div>
+            <h2 class="panel-title">
+                Select booklet pages
+            </h2>
+
+            <p class="panel-subtitle">
+                Select exactly which pages or halves should appear
+                in the final booklet.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="selection-toolbar">
+
+        <button
+            id="selectAllBtn"
+            class="secondary"
+        >
+            Select All
+        </button>
+
+
+        <button
+            id="selectNoneBtn"
+            class="secondary"
+        >
+            Select None
+        </button>
+
+
+        <button
+            id="invertBtn"
+            class="secondary"
+        >
+            Invert
+        </button>
+
+
+        <span
+            class="selection-count"
+            id="selectionCount"
+        >
+            0 selected
+        </span>
+
+    </div>
+
+
+    <div
+        id="pageGrid"
+        class="page-grid"
+    ></div>
+
+
+    <div
+        class="status"
+        id="selectionStatus"
+    ></div>
+
+</section>
+
+
+<!-- =========================================================
+     4. BOOKLET SETTINGS
+========================================================= -->
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div class="step-number">
+            4
+        </div>
+
+        <div>
+            <h2 class="panel-title">
+                Configure the booklet
+            </h2>
+
+            <p class="panel-subtitle">
+                Control paper size, sheet orientation, outer margins,
+                and the center fold gutter.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="controls">
+
+
+        <!-- PAPER -->
+
+        <div class="control">
+
+            <label for="paperSize">
+                Paper size
+            </label>
+
+            <select id="paperSize">
+
+                <option value="letter">
+                    Letter — 8.5 × 11"
+                </option>
+
+                <option value="a4">
+                    A4
+                </option>
+
+                <option value="legal">
+                    Legal — 8.5 × 14"
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ORIENTATION -->
+
+        <div class="control">
+
+            <label for="bookletOrientation">
+                Booklet orientation
+            </label>
+
+            <select id="bookletOrientation">
+
+                <option value="horizontal">
+                    Horizontal — landscape sheet
+                </option>
+
+                <option value="vertical">
+                    Vertical — portrait sheet
+                </option>
+
+            </select>
+
+            <div
+                class="help-text"
+                id="orientationDescription"
+            ></div>
+
+        </div>
+
+
+        <!-- OUTER MARGIN -->
+
+        <div class="control">
+
+            <label for="margin">
+                Outer margin (points)
+            </label>
+
+            <input
+                id="margin"
+                type="number"
+                value="18"
+                min="0"
+                step="1"
+            >
+
+            <div class="help-text">
+                Space between the content and the outside edge
+                of the physical sheet.
+            </div>
+
+        </div>
+
+
+        <!-- GUTTER -->
+
+        <div class="control">
+
+            <label for="gutter">
+                Center gutter (points)
+            </label>
+
+            <input
+                id="gutter"
+                type="number"
+                value="12"
+                min="0"
+                step="1"
+            >
+
+            <div class="help-text">
+                Space around the center fold between the two
+                booklet pages.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ORIENTATION VISUALS -->
+
+    <div class="orientation-card">
+
+        <div class="orientation-option">
+
+            <strong>
+                Horizontal
+            </strong>
+
+            <div>
+                Landscape sheet. Two pages remain
+                left and right.
+            </div>
+
+            <div
+                class="orientation-diagram horizontal"
+            >
+
+                <div>
+                    BOOKLET<br>
+                    PAGE
                 </div>
-            </div>
 
-            <div class="control">
-                <label for="previewScale">Preview resolution</label>
-
-                <select id="previewScale">
-                    <option value="1">Low</option>
-                    <option value="1.5" selected>Medium</option>
-                    <option value="2">High</option>
-                    <option value="3">Very High</option>
-                </select>
-
-                <div class="orientation-description">
-                    This only affects the browser preview, not final PDF quality.
+                <div>
+                    BOOKLET<br>
+                    PAGE
                 </div>
+
             </div>
 
         </div>
 
-        <div class="button-row">
-            <button id="reloadPreviewBtn" class="secondary">
-                Rebuild Preview
-            </button>
-        </div>
-    </div>
 
+        <div class="orientation-option">
 
-    <!-- SELECTION -->
-    <div class="panel">
-        <h2>3. Select Pages</h2>
+            <strong>
+                Vertical
+            </strong>
 
-        <div class="selection-bar">
-
-            <button id="selectAllBtn" class="secondary">
-                Select All
-            </button>
-
-            <button id="selectNoneBtn" class="secondary">
-                Select None
-            </button>
-
-            <button id="invertBtn" class="secondary">
-                Invert Selection
-            </button>
-
-            <span class="selection-count" id="selectionCount">
-                0 selected
-            </span>
-
-        </div>
-
-        <div id="pageGrid" class="page-grid"></div>
-
-        <div class="status" id="selectionStatus"></div>
-    </div>
-
-
-    <!-- BOOKLET SETTINGS -->
-    <div class="panel">
-        <h2>4. Booklet Settings</h2>
-
-        <div class="controls">
-
-            <div class="control">
-                <label for="paperSize">Paper size</label>
-
-                <select id="paperSize">
-                    <option value="letter">Letter — 8.5 × 11 in</option>
-                    <option value="a4">A4</option>
-                    <option value="legal">Legal — 8.5 × 14 in</option>
-                </select>
+            <div>
+                Portrait sheet. The pages still remain
+                left and right and fold longways.
             </div>
 
+            <div
+                class="orientation-diagram vertical"
+            >
 
-            <div class="control">
-                <label for="bookletOrientation">
-                    Booklet orientation
-                </label>
-
-                <select id="bookletOrientation">
-                    <option value="horizontal">
-                        Horizontal — Landscape sheet
-                    </option>
-
-                    <option value="vertical">
-                        Vertical — Portrait sheet
-                    </option>
-                </select>
-
-                <div class="orientation-description" id="orientationDescription">
-                    Landscape sheet with two booklet pages side-by-side.
+                <div>
+                    BOOKLET<br>
+                    PAGE
                 </div>
-            </div>
 
+                <div>
+                    BOOKLET<br>
+                    PAGE
+                </div>
 
-            <div class="control">
-                <label for="margin">
-                    Outer margin (points)
-                </label>
-
-                <input
-                    id="margin"
-                    type="number"
-                    value="18"
-                    min="0"
-                    step="1"
-                >
-            </div>
-
-
-            <div class="control">
-                <label for="gutter">
-                    Center gutter (points)
-                </label>
-
-                <input
-                    id="gutter"
-                    type="number"
-                    value="12"
-                    min="0"
-                    step="1"
-                >
             </div>
 
         </div>
 
-        <div class="info">
-            <strong>Horizontal:</strong>
-            the physical sheet is landscape and the two booklet pages are
-            left and right.
-
-            <br><br>
-
-            <strong>Vertical:</strong>
-            the physical sheet is portrait and the two booklet pages are
-            STILL left and right. They are <strong>not stacked vertically</strong>.
-            For Letter paper this produces two approximately
-            <strong>4.25 × 11 inch</strong> page areas, folded longways.
-        </div>
-
-        <div class="button-row">
-            <button id="buildPreviewBtn">
-                Build Booklet Preview
-            </button>
-
-            <button id="downloadSelectedBtn" class="secondary">
-                Download Selected Pages
-            </button>
-
-            <button id="downloadBookletBtn" class="success">
-                Download Final Booklet PDF
-            </button>
-        </div>
-
-        <div class="status" id="bookletStatus"></div>
     </div>
 
 
-    <!-- BOOKLET PREVIEW -->
-    <div class="panel">
-        <h2>5. Booklet Preview</h2>
+    <!-- IMPORTANT MARGIN EXPLANATION -->
 
-        <div id="bookletPreview" class="booklet-preview"></div>
+    <div class="info-box">
+
+        <div class="info-icon">
+            ✓
+        </div>
+
+        <div>
+
+            <strong>
+                Margin and gutter behavior
+            </strong>
+
+            <br>
+
+            The outer margin is measured from the
+            <strong>outside edge of the physical sheet</strong>.
+            It is not applied again at the fold.
+
+            The center gutter is measured separately around
+            the fold.
+
+            This means increasing the outer margin moves the
+            content inward from the outside edges, while
+            increasing the gutter moves the two booklet pages
+            farther apart around the center fold.
+
+        </div>
+
     </div>
 
-</div>
+
+    <div class="warning-box">
+
+        <strong>
+            Vertical orientation is intentionally skinny.
+        </strong>
+
+        On Letter paper it creates an approximately
+        <strong>4.25 × 11 inch</strong> booklet page on each side.
+        The pages remain side-by-side; they are never stacked.
+    </div>
 
 
-<!-- PDF-LIB -->
+    <div class="button-row">
+
+        <button
+            id="buildPreviewBtn"
+        >
+            Preview Booklet
+        </button>
+
+
+        <button
+            id="downloadSelectedBtn"
+            class="secondary"
+            disabled
+        >
+            Download Selected Pages
+        </button>
+
+
+        <button
+            id="downloadBookletBtn"
+            class="success"
+            disabled
+        >
+            Download Final Booklet
+        </button>
+
+    </div>
+
+
+    <div
+        class="status"
+        id="bookletStatus"
+    ></div>
+
+</section>
+
+
+<!-- =========================================================
+     5. BOOKLET PREVIEW
+========================================================= -->
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div class="step-number">
+            5
+        </div>
+
+        <div>
+            <h2 class="panel-title">
+                Booklet preview
+            </h2>
+
+            <p class="panel-subtitle">
+                Front and back sheets are shown in the same
+                left/right arrangement used by the final PDF.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div
+        id="bookletPreview"
+        class="booklet-preview"
+    >
+
+        <div class="empty-state">
+            Upload a PDF and select some pages to preview
+            the booklet.
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+<!-- =========================================================
+     PDF-LIB
+========================================================= -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
 
-<!-- MAIN APPLICATION -->
+<!-- =========================================================
+     APPLICATION
+========================================================= -->
+
 <script type="module">
 
 import * as pdfjsLib from
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs";
+
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
 
 
 const {
-    PDFDocument,
-    rgb,
-    degrees
+    PDFDocument
 } = PDFLib;
 
 
 /* =========================================================
-   GLOBAL STATE
+   STATE
 ========================================================= */
 
 let originalPdfBytes = null;
+
 let sourcePdf = null;
+
 let pdfJsDocument = null;
 
 let virtualPages = [];
-let selectedPages = new Set();
 
-let bookletPreviewData = [];
+let selectedPages = new Set();
 
 
 /* =========================================================
@@ -651,7 +1952,9 @@ const bookletOrientation =
     document.getElementById("bookletOrientation");
 
 const orientationDescription =
-    document.getElementById("orientationDescription");
+    document.getElementById(
+        "orientationDescription"
+    );
 
 const marginInput =
     document.getElementById("margin");
@@ -660,39 +1963,37 @@ const gutterInput =
     document.getElementById("gutter");
 
 const buildPreviewBtn =
-    document.getElementById("buildPreviewBtn");
+    document.getElementById(
+        "buildPreviewBtn"
+    );
 
 const downloadSelectedBtn =
-    document.getElementById("downloadSelectedBtn");
+    document.getElementById(
+        "downloadSelectedBtn"
+    );
 
 const downloadBookletBtn =
-    document.getElementById("downloadBookletBtn");
+    document.getElementById(
+        "downloadBookletBtn"
+    );
 
 const bookletPreview =
-    document.getElementById("bookletPreview");
+    document.getElementById(
+        "bookletPreview"
+    );
 
 const bookletStatus =
-    document.getElementById("bookletStatus");
+    document.getElementById(
+        "bookletStatus"
+    );
 
 
 /* =========================================================
    PAPER SIZES
-   =========================================================
-
-   Values are PDF points.
-
-   Letter:
-       8.5 x 11 inches
-       612 x 792
-
-   A4:
-       595.28 x 841.89
-
-   Legal:
-       612 x 1008
 ========================================================= */
 
 const PAPER_SIZES = {
+
     letter: {
         width: 612,
         height: 792
@@ -707,6 +2008,7 @@ const PAPER_SIZES = {
         width: 612,
         height: 1008
     }
+
 };
 
 
@@ -714,76 +2016,96 @@ const PAPER_SIZES = {
    FILE UPLOAD
 ========================================================= */
 
-pdfFile.addEventListener("change", async () => {
+pdfFile.addEventListener(
+    "change",
+    async () => {
 
-    const file = pdfFile.files[0];
+        const file =
+            pdfFile.files[0];
 
-    if (!file) {
-        return;
-    }
+        if (!file) {
+            return;
+        }
 
-    try {
 
-        setStatus(
-            fileStatus,
-            "Loading PDF...",
-            false
-        );
+        try {
 
-        originalPdfBytes =
-            new Uint8Array(
-                await file.arrayBuffer()
+            setStatus(
+                fileStatus,
+                "Loading PDF…",
+                false
             );
 
-        /*
-         * Load one copy through pdf-lib.
-         *
-         * This is the PDF that will be used for
-         * final non-raster booklet creation.
-         */
-        sourcePdf =
-            await PDFDocument.load(
-                originalPdfBytes
+
+            originalPdfBytes =
+                new Uint8Array(
+                    await file.arrayBuffer()
+                );
+
+
+            /*
+             * This copy is used for the final PDF.
+             */
+            sourcePdf =
+                await PDFDocument.load(
+                    originalPdfBytes
+                );
+
+
+            /*
+             * This copy is only used for previews.
+             */
+            pdfJsDocument =
+                await pdfjsLib
+                    .getDocument({
+                        data:
+                            originalPdfBytes.slice()
+                    })
+                    .promise;
+
+
+            virtualPages = [];
+
+            selectedPages =
+                new Set();
+
+
+            await buildVirtualPages();
+
+
+            setStatus(
+                fileStatus,
+                `Loaded ${pdfJsDocument.numPages} page${
+                    pdfJsDocument.numPages === 1
+                        ? ""
+                        : "s"
+                }.`,
+                false
             );
 
-        /*
-         * Load another copy through PDF.js.
-         *
-         * PDF.js is only for previews.
-         */
-        pdfJsDocument =
-            await pdfjsLib.getDocument({
-                data: originalPdfBytes.slice()
-            }).promise;
 
-        virtualPages = [];
-        selectedPages = new Set();
+            updateButtonStates();
 
-        setStatus(
-            fileStatus,
-            `Loaded ${pdfJsDocument.numPages} PDF page(s).`,
-            false
-        );
+        }
+        catch (error) {
 
-        await buildVirtualPages();
+            console.error(error);
 
-    } catch (error) {
+            setStatus(
+                fileStatus,
+                "Could not load PDF: " +
+                error.message,
+                true
+            );
 
-        console.error(error);
-
-        setStatus(
-            fileStatus,
-            "Error loading PDF: " + error.message,
-            true
-        );
+        }
 
     }
-
-});
+);
 
 
 /* =========================================================
-   SPLIT MODE CHANGE
+   SPLIT MODE
 ========================================================= */
 
 splitMode.addEventListener(
@@ -804,9 +2126,10 @@ reloadPreviewBtn.addEventListener(
     async () => {
 
         if (!pdfJsDocument) {
+
             setStatus(
                 fileStatus,
-                "Please upload a PDF first.",
+                "Upload a PDF first.",
                 true
             );
 
@@ -827,15 +2150,21 @@ async function buildVirtualPages() {
     pageGrid.innerHTML = "";
 
     virtualPages = [];
-    selectedPages = new Set();
+
+    selectedPages =
+        new Set();
+
 
     setStatus(
         selectionStatus,
-        "Creating previews...",
+        "Building page previews…",
         false
     );
 
-    const mode = splitMode.value;
+
+    const mode =
+        splitMode.value;
+
 
     for (
         let pageNumber = 1;
@@ -848,56 +2177,61 @@ async function buildVirtualPages() {
                 pageNumber
             );
 
-        /*
-         * Scale is only for browser preview.
-         */
+
         const scale =
-            Number(previewScale.value);
+            Number(
+                previewScale.value
+            );
+
 
         const viewport =
             pdfPage.getViewport({
                 scale
             });
 
+
         /*
-         * NONE:
-         *
-         * The entire original PDF page becomes
-         * ONE selectable booklet page.
+         * =========================================
+         * NO SPLIT
+         * =========================================
          */
+
         if (mode === "none") {
 
             const canvas =
-                document.createElement("canvas");
+                await renderPageToCanvas(
+                    pdfPage,
+                    viewport
+                );
 
-            const context =
-                canvas.getContext("2d");
-
-            canvas.width =
-                Math.ceil(viewport.width);
-
-            canvas.height =
-                Math.ceil(viewport.height);
-
-            await pdfPage.render({
-                canvasContext: context,
-                viewport
-            }).promise;
 
             virtualPages.push({
-                sourcePage: pageNumber - 1,
-                side: "whole",
+
+                sourcePage:
+                    pageNumber - 1,
+
+                side:
+                    "whole",
+
                 canvas,
-                label: `PDF page ${pageNumber}`
+
+                label:
+                    `PDF page ${pageNumber}`
+
             });
 
         }
 
 
         /*
+         * =========================================
          * LEFT / RIGHT
+         * =========================================
          */
-        else if (mode === "left-right") {
+
+        else if (
+            mode === "left-right"
+        ) {
 
             const fullCanvas =
                 await renderPageToCanvas(
@@ -905,16 +2239,18 @@ async function buildVirtualPages() {
                     viewport
                 );
 
+
             const halfWidth =
                 Math.floor(
                     fullCanvas.width / 2
                 );
 
-            /*
-             * Left half
-             */
+
             const leftCanvas =
-                document.createElement("canvas");
+                document.createElement(
+                    "canvas"
+                );
+
 
             leftCanvas.width =
                 halfWidth;
@@ -922,68 +2258,102 @@ async function buildVirtualPages() {
             leftCanvas.height =
                 fullCanvas.height;
 
+
             leftCanvas
                 .getContext("2d")
                 .drawImage(
                     fullCanvas,
+
                     0,
                     0,
                     halfWidth,
                     fullCanvas.height,
+
                     0,
                     0,
                     halfWidth,
                     fullCanvas.height
                 );
 
+
             virtualPages.push({
-                sourcePage: pageNumber - 1,
-                side: "left",
-                canvas: leftCanvas,
-                label: `PDF page ${pageNumber} — Left`
+
+                sourcePage:
+                    pageNumber - 1,
+
+                side:
+                    "left",
+
+                canvas:
+                    leftCanvas,
+
+                label:
+                    `PDF page ${pageNumber} — Left`
+
             });
 
 
-            /*
-             * Right half
-             */
             const rightCanvas =
-                document.createElement("canvas");
+                document.createElement(
+                    "canvas"
+                );
+
 
             rightCanvas.width =
-                fullCanvas.width - halfWidth;
+                fullCanvas.width -
+                halfWidth;
 
             rightCanvas.height =
                 fullCanvas.height;
+
 
             rightCanvas
                 .getContext("2d")
                 .drawImage(
                     fullCanvas,
+
                     halfWidth,
                     0,
-                    fullCanvas.width - halfWidth,
+                    fullCanvas.width -
+                        halfWidth,
                     fullCanvas.height,
+
                     0,
                     0,
-                    fullCanvas.width - halfWidth,
+                    fullCanvas.width -
+                        halfWidth,
                     fullCanvas.height
                 );
 
+
             virtualPages.push({
-                sourcePage: pageNumber - 1,
-                side: "right",
-                canvas: rightCanvas,
-                label: `PDF page ${pageNumber} — Right`
+
+                sourcePage:
+                    pageNumber - 1,
+
+                side:
+                    "right",
+
+                canvas:
+                    rightCanvas,
+
+                label:
+                    `PDF page ${pageNumber} — Right`
+
             });
 
         }
 
 
         /*
+         * =========================================
          * TOP / BOTTOM
+         * =========================================
          */
-        else if (mode === "top-bottom") {
+
+        else if (
+            mode === "top-bottom"
+        ) {
 
             const fullCanvas =
                 await renderPageToCanvas(
@@ -991,17 +2361,18 @@ async function buildVirtualPages() {
                     viewport
                 );
 
+
             const halfHeight =
                 Math.floor(
                     fullCanvas.height / 2
                 );
 
 
-            /*
-             * Top half
-             */
             const topCanvas =
-                document.createElement("canvas");
+                document.createElement(
+                    "canvas"
+                );
+
 
             topCanvas.width =
                 fullCanvas.width;
@@ -1009,72 +2380,104 @@ async function buildVirtualPages() {
             topCanvas.height =
                 halfHeight;
 
+
             topCanvas
                 .getContext("2d")
                 .drawImage(
                     fullCanvas,
+
                     0,
                     0,
                     fullCanvas.width,
                     halfHeight,
+
                     0,
                     0,
                     fullCanvas.width,
                     halfHeight
                 );
 
+
             virtualPages.push({
-                sourcePage: pageNumber - 1,
-                side: "top",
-                canvas: topCanvas,
-                label: `PDF page ${pageNumber} — Top`
+
+                sourcePage:
+                    pageNumber - 1,
+
+                side:
+                    "top",
+
+                canvas:
+                    topCanvas,
+
+                label:
+                    `PDF page ${pageNumber} — Top`
+
             });
 
 
-            /*
-             * Bottom half
-             */
             const bottomCanvas =
-                document.createElement("canvas");
+                document.createElement(
+                    "canvas"
+                );
+
 
             bottomCanvas.width =
                 fullCanvas.width;
 
             bottomCanvas.height =
-                fullCanvas.height - halfHeight;
+                fullCanvas.height -
+                halfHeight;
+
 
             bottomCanvas
                 .getContext("2d")
                 .drawImage(
                     fullCanvas,
+
                     0,
                     halfHeight,
                     fullCanvas.width,
-                    fullCanvas.height - halfHeight,
+                    fullCanvas.height -
+                        halfHeight,
+
                     0,
                     0,
                     fullCanvas.width,
-                    fullCanvas.height - halfHeight
+                    fullCanvas.height -
+                        halfHeight
                 );
 
+
             virtualPages.push({
-                sourcePage: pageNumber - 1,
-                side: "bottom",
-                canvas: bottomCanvas,
-                label: `PDF page ${pageNumber} — Bottom`
+
+                sourcePage:
+                    pageNumber - 1,
+
+                side:
+                    "bottom",
+
+                canvas:
+                    bottomCanvas,
+
+                label:
+                    `PDF page ${pageNumber} — Bottom`
+
             });
+
         }
+
     }
 
 
     /*
-     * Select everything by default.
+     * Select all by default.
      */
     for (
         let i = 0;
         i < virtualPages.length;
         i++
     ) {
+
         selectedPages.add(i);
     }
 
@@ -1083,16 +2486,23 @@ async function buildVirtualPages() {
 
     updateSelectionCount();
 
+    updateButtonStates();
+
+
     setStatus(
         selectionStatus,
-        `${virtualPages.length} selectable booklet page(s) created.`,
+        `${virtualPages.length} selectable booklet page${
+            virtualPages.length === 1
+                ? ""
+                : "s"
+        }.`,
         false
     );
 }
 
 
 /* =========================================================
-   RENDER PDF.JS PAGE TO CANVAS
+   RENDER PDF PAGE
 ========================================================= */
 
 async function renderPageToCanvas(
@@ -1101,57 +2511,96 @@ async function renderPageToCanvas(
 ) {
 
     const canvas =
-        document.createElement("canvas");
+        document.createElement(
+            "canvas"
+        );
+
 
     const context =
         canvas.getContext("2d");
 
+
     canvas.width =
-        Math.ceil(viewport.width);
+        Math.ceil(
+            viewport.width
+        );
 
     canvas.height =
-        Math.ceil(viewport.height);
+        Math.ceil(
+            viewport.height
+        );
+
 
     await pdfPage.render({
-        canvasContext: context,
+
+        canvasContext:
+            context,
+
         viewport
+
     }).promise;
+
 
     return canvas;
 }
 
 
 /* =========================================================
-   RENDER SELECTABLE PAGE GRID
+   PAGE GRID
 ========================================================= */
 
 function renderPageGrid() {
 
     pageGrid.innerHTML = "";
 
+
+    if (
+        virtualPages.length === 0
+    ) {
+
+        pageGrid.innerHTML = `
+            <div class="empty-state">
+                No pages available.
+            </div>
+        `;
+
+        return;
+    }
+
+
     virtualPages.forEach(
         (virtualPage, index) => {
 
             const card =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
+
 
             card.className =
                 "page-card";
 
+
             if (
                 selectedPages.has(index)
             ) {
+
                 card.classList.add(
                     "selected"
                 );
+
             }
 
 
             const checkmark =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
+
 
             checkmark.className =
                 "checkmark";
+
 
             checkmark.textContent =
                 selectedPages.has(index)
@@ -1159,44 +2608,42 @@ function renderPageGrid() {
                     : "";
 
 
-            /*
-             * We can directly put the preview canvas
-             * into the card because it is only a
-             * display object.
-             */
             const canvas =
-                virtualPage.canvas;
+                document.createElement(
+                    "canvas"
+                );
 
-            /*
-             * Clone the canvas so the grid owns
-             * its own display copy.
-             */
-            const displayCanvas =
-                document.createElement("canvas");
 
-            displayCanvas.width =
-                canvas.width;
+            canvas.width =
+                virtualPage.canvas.width;
 
-            displayCanvas.height =
-                canvas.height;
+            canvas.height =
+                virtualPage.canvas.height;
 
-            displayCanvas
+
+            canvas
                 .getContext("2d")
                 .drawImage(
-                    canvas,
+                    virtualPage.canvas,
                     0,
                     0
                 );
 
 
             const label =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
+
 
             label.className =
                 "page-label";
 
+
             label.textContent =
-                `${index + 1}. ${virtualPage.label}`;
+                `${index + 1}. ${
+                    virtualPage.label
+                }`;
 
 
             card.appendChild(
@@ -1204,7 +2651,7 @@ function renderPageGrid() {
             );
 
             card.appendChild(
-                displayCanvas
+                canvas
             );
 
             card.appendChild(
@@ -1216,15 +2663,38 @@ function renderPageGrid() {
                 "click",
                 () => {
 
-                    toggleSelection(
-                        index
-                    );
+                    if (
+                        selectedPages.has(
+                            index
+                        )
+                    ) {
+
+                        selectedPages.delete(
+                            index
+                        );
+
+                    } else {
+
+                        selectedPages.add(
+                            index
+                        );
+                    }
+
+
+                    renderPageGrid();
+
+                    updateSelectionCount();
+
+                    updateButtonStates();
 
                 }
             );
 
 
-            pageGrid.appendChild(card);
+            pageGrid.appendChild(
+                card
+            );
+
         }
     );
 }
@@ -1234,24 +2704,6 @@ function renderPageGrid() {
    SELECTION
 ========================================================= */
 
-function toggleSelection(index) {
-
-    if (
-        selectedPages.has(index)
-    ) {
-
-        selectedPages.delete(index);
-
-    } else {
-
-        selectedPages.add(index);
-    }
-
-    renderPageGrid();
-    updateSelectionCount();
-}
-
-
 selectAllBtn.addEventListener(
     "click",
     () => {
@@ -1259,12 +2711,16 @@ selectAllBtn.addEventListener(
         selectedPages =
             new Set(
                 virtualPages.map(
-                    (_, i) => i
+                    (_, index) => index
                 )
             );
 
+
         renderPageGrid();
+
         updateSelectionCount();
+
+        updateButtonStates();
     }
 );
 
@@ -1276,7 +2732,10 @@ selectNoneBtn.addEventListener(
         selectedPages.clear();
 
         renderPageGrid();
+
         updateSelectionCount();
+
+        updateButtonStates();
     }
 );
 
@@ -1288,6 +2747,7 @@ invertBtn.addEventListener(
         const next =
             new Set();
 
+
         for (
             let i = 0;
             i < virtualPages.length;
@@ -1297,14 +2757,23 @@ invertBtn.addEventListener(
             if (
                 !selectedPages.has(i)
             ) {
+
                 next.add(i);
+
             }
+
         }
 
-        selectedPages = next;
+
+        selectedPages =
+            next;
+
 
         renderPageGrid();
+
         updateSelectionCount();
+
+        updateButtonStates();
     }
 );
 
@@ -1317,14 +2786,8 @@ function updateSelectionCount() {
 
 
 /* =========================================================
-   ORIENTATION DESCRIPTION
+   ORIENTATION
 ========================================================= */
-
-bookletOrientation.addEventListener(
-    "change",
-    updateOrientationDescription
-);
-
 
 function updateOrientationDescription() {
 
@@ -1334,22 +2797,41 @@ function updateOrientationDescription() {
     ) {
 
         orientationDescription.textContent =
-            "Landscape sheet with two booklet pages side-by-side.";
+            "Landscape sheet — two booklet pages remain left and right.";
 
     } else {
 
         orientationDescription.textContent =
-            "Portrait sheet with two booklet pages STILL side-by-side. " +
-            "They are not stacked. The sheet folds longways.";
+            "Portrait sheet — two booklet pages remain left and right and fold longways.";
+
     }
 }
+
+
+bookletOrientation.addEventListener(
+    "change",
+    () => {
+
+        updateOrientationDescription();
+
+        if (
+            selectedPages.size > 0
+        ) {
+
+            buildBookletPreview()
+                .catch(console.error);
+
+        }
+
+    }
+);
 
 
 updateOrientationDescription();
 
 
 /* =========================================================
-   GET PAPER / SHEET DIMENSIONS
+   SHEET DIMENSIONS
 ========================================================= */
 
 function getSheetDimensions() {
@@ -1359,61 +2841,68 @@ function getSheetDimensions() {
             paperSize.value
         ];
 
+
     /*
-     * Horizontal:
+     * HORIZONTAL
      *
-     *     landscape
+     * Landscape physical sheet.
      *
-     *     11 x 8.5
+     * Letter:
      *
-     *     [ page ][ page ]
+     * 11 × 8.5
      */
+
     if (
         bookletOrientation.value ===
         "horizontal"
     ) {
 
         return {
-            width: paper.height,
-            height: paper.width
+
+            width:
+                paper.height,
+
+            height:
+                paper.width
+
         };
+
     }
 
 
     /*
-     * Vertical:
+     * VERTICAL
      *
-     *     portrait
+     * Portrait physical sheet.
      *
-     *     8.5 x 11
+     * Letter:
      *
-     *     [ page ][ page ]
+     * 8.5 × 11
      *
-     *     NOT:
+     * But still:
      *
-     *     [ page ]
-     *     [ page ]
+     * [ page ][ page ]
+     *
+     * NOT:
+     *
+     * [ page ]
+     * [ page ]
      */
+
     return {
-        width: paper.width,
-        height: paper.height
+
+        width:
+            paper.width,
+
+        height:
+            paper.height
+
     };
 }
 
 
 /* =========================================================
-   GET SOURCE PAGE BOUNDING BOX
-=========================================================
-
-   pdf-lib uses PDF coordinates where:
-
-       origin = bottom-left
-
-   For ordinary PDFs whose page box starts at
-   (0, 0), this is straightforward.
-
-   CropBox is used so that non-zero page origins
-   are handled better.
+   SOURCE CROP BOX
 ========================================================= */
 
 function getSourceCropBox(
@@ -1428,33 +2917,62 @@ function getSourceCropBox(
         const box =
             sourcePage.getCropBox();
 
+
         return {
-            left: box.x,
-            bottom: box.y,
-            right: box.x + box.width,
-            top: box.y + box.height,
-            width: box.width,
-            height: box.height
+
+            left:
+                box.x,
+
+            bottom:
+                box.y,
+
+            right:
+                box.x +
+                box.width,
+
+            top:
+                box.y +
+                box.height,
+
+            width:
+                box.width,
+
+            height:
+                box.height
+
         };
+
     }
 
 
     const size =
         sourcePage.getSize();
 
+
     return {
+
         left: 0,
+
         bottom: 0,
-        right: size.width,
-        top: size.height,
-        width: size.width,
-        height: size.height
+
+        right:
+            size.width,
+
+        top:
+            size.height,
+
+        width:
+            size.width,
+
+        height:
+            size.height
+
     };
 }
 
 
 /* =========================================================
-   GET HALF BOUNDING BOX
+   SOURCE BOUNDING BOX
 ========================================================= */
 
 function getBoundingBoxForVirtualPage(
@@ -1467,23 +2985,38 @@ function getBoundingBoxForVirtualPage(
             sourcePage
         );
 
+
     /*
      * WHOLE PAGE
      */
-    if (side === "whole") {
+
+    if (
+        side === "whole"
+    ) {
 
         return {
-            left: box.left,
-            bottom: box.bottom,
-            right: box.right,
-            top: box.top
+
+            left:
+                box.left,
+
+            bottom:
+                box.bottom,
+
+            right:
+                box.right,
+
+            top:
+                box.top
+
         };
+
     }
 
 
     /*
      * LEFT / RIGHT
      */
+
     if (
         side === "left" ||
         side === "right"
@@ -1494,30 +3027,52 @@ function getBoundingBoxForVirtualPage(
             box.width / 2;
 
 
-        if (side === "left") {
+        if (
+            side === "left"
+        ) {
 
             return {
-                left: box.left,
-                bottom: box.bottom,
-                right: midX,
-                top: box.top
+
+                left:
+                    box.left,
+
+                bottom:
+                    box.bottom,
+
+                right:
+                    midX,
+
+                top:
+                    box.top
+
             };
 
-        } else {
-
-            return {
-                left: midX,
-                bottom: box.bottom,
-                right: box.right,
-                top: box.top
-            };
         }
+
+
+        return {
+
+            left:
+                midX,
+
+            bottom:
+                box.bottom,
+
+            right:
+                box.right,
+
+            top:
+                box.top
+
+        };
+
     }
 
 
     /*
      * TOP / BOTTOM
      */
+
     if (
         side === "top" ||
         side === "bottom"
@@ -1528,45 +3083,67 @@ function getBoundingBoxForVirtualPage(
             box.height / 2;
 
 
-        if (side === "top") {
+        if (
+            side === "top"
+        ) {
 
             return {
-                left: box.left,
-                bottom: midY,
-                right: box.right,
-                top: box.top
+
+                left:
+                    box.left,
+
+                bottom:
+                    midY,
+
+                right:
+                    box.right,
+
+                top:
+                    box.top
+
             };
 
-        } else {
-
-            return {
-                left: box.left,
-                bottom: box.bottom,
-                right: box.right,
-                top: midY
-            };
         }
+
+
+        return {
+
+            left:
+                box.left,
+
+            bottom:
+                box.bottom,
+
+            right:
+                box.right,
+
+            top:
+                midY
+
+        };
+
     }
 
 
     throw new Error(
-        "Unknown virtual page side: " +
+        "Unknown page side: " +
         side
     );
 }
 
 
 /* =========================================================
-   EMBED SELECTED VIRTUAL PAGES
+   EMBED SELECTED PAGES
 ========================================================= */
 
 async function embedSelectedPages(
     outputPdf
 ) {
 
-    const embeddedPages = [];
+    const result = [];
 
-    const selectedIndexes =
+
+    const indexes =
         Array.from(
             selectedPages
         ).sort(
@@ -1575,8 +3152,7 @@ async function embedSelectedPages(
 
 
     for (
-        const virtualIndex of
-        selectedIndexes
+        const virtualIndex of indexes
     ) {
 
         const virtualPage =
@@ -1584,10 +3160,12 @@ async function embedSelectedPages(
                 virtualIndex
             ];
 
+
         const sourcePage =
             sourcePdf.getPage(
                 virtualPage.sourcePage
             );
+
 
         const boundingBox =
             getBoundingBoxForVirtualPage(
@@ -1597,13 +3175,9 @@ async function embedSelectedPages(
 
 
         /*
-         * IMPORTANT:
+         * Native PDF embedding.
          *
-         * This embeds the original PDF page
-         * content and clips it to the desired
-         * region.
-         *
-         * No screenshot is inserted here.
+         * The preview canvas is NOT used.
          */
         const embedded =
             await outputPdf.embedPage(
@@ -1612,8 +3186,10 @@ async function embedSelectedPages(
             );
 
 
-        embeddedPages.push({
+        result.push({
+
             embedded,
+
             sourceWidth:
                 boundingBox.right -
                 boundingBox.left,
@@ -1623,93 +3199,171 @@ async function embedSelectedPages(
                 boundingBox.bottom,
 
             virtualIndex
+
         });
+
     }
 
-    return embeddedPages;
+
+    return result;
 }
 
 
 /* =========================================================
-   CALCULATE TWO-COLUMN AREA
+   IMPORTANT:
+   CORRECT MARGIN / GUTTER GEOMETRY
 =========================================================
 
-   BOTH orientations use:
+   THIS IS THE FIX.
 
-       ┌─────────────┬─────────────┐
-       │             │             │
-       │    PAGE     │    PAGE     │
-       │             │             │
-       └─────────────┴─────────────┘
+   Previously the usable width was effectively:
 
-   The orientation changes the physical sheet,
-   NOT the arrangement of the two pages.
+       halfWidth
+       - gutter / 2
+       - margin
+       - margin
+
+   That treated the fold side as another outer
+   margin.
+
+   Instead, each booklet page has:
+
+       OUTSIDE EDGE
+              ↓
+       ┌───────────────┐
+       │ ← margin →    │
+       │               │
+       │     PAGE      │
+       │               │
+       │         →     │
+       └───────────────┘
+                    ↑
+               gutter / 2
+                    ↑
+                 FOLD
+
+   Therefore the available width of each page is:
+
+       halfWidth
+       - outerMargin
+       - gutter / 2
+
+   NOT:
+
+       halfWidth
+       - outerMargin * 2
+       - gutter / 2
+
+   This keeps the page centered correctly relative
+   to the fold while the outer margin controls only
+   the outside edge.
 ========================================================= */
 
 function getColumnAreas(
     sheetWidth,
     sheetHeight,
-    margin,
+    outerMargin,
     gutter
 ) {
 
     const halfWidth =
         sheetWidth / 2;
 
+
     /*
-     * Gutter is centered around the fold.
+     * Width of each actual booklet-page area.
+     *
+     * The fold consumes half of the gutter
+     * on each side.
+     *
+     * The outer margin exists only at the
+     * outside edge of each page.
      */
-    const usableColumnWidth =
+    const columnWidth =
         halfWidth -
-        gutter / 2 -
-        margin * 2;
+        outerMargin -
+        gutter / 2;
 
-    const usableHeight =
+
+    /*
+     * Height is affected by the outer margin
+     * at the top and bottom because those are
+     * actual outside edges of the physical sheet.
+     */
+    const columnHeight =
         sheetHeight -
-        margin * 2;
+        outerMargin * 2;
 
 
-    const leftArea = {
+    if (
+        columnWidth <= 0 ||
+        columnHeight <= 0
+    ) {
+
+        throw new Error(
+            "The margin and gutter are too large for the selected paper size."
+        );
+    }
+
+
+    /*
+     * LEFT PAGE
+     *
+     * Starts after the outer margin.
+     *
+     * Ends at half-width minus half the gutter.
+     */
+    const left = {
+
         x:
-            margin,
+            outerMargin,
 
         y:
-            margin,
+            outerMargin,
 
         width:
-            usableColumnWidth,
+            columnWidth,
 
         height:
-            usableHeight
+            columnHeight
+
     };
 
 
-    const rightArea = {
+    /*
+     * RIGHT PAGE
+     *
+     * Starts at half-width plus half the gutter.
+     *
+     * Ends at the physical sheet's outer margin.
+     */
+    const right = {
+
         x:
             halfWidth +
-            gutter / 2 +
-            margin,
+            gutter / 2,
 
         y:
-            margin,
+            outerMargin,
 
         width:
-            usableColumnWidth,
+            columnWidth,
 
         height:
-            usableHeight
+            columnHeight
+
     };
 
 
     return {
-        left: leftArea,
-        right: rightArea
+        left,
+        right
     };
 }
 
 
 /* =========================================================
-   DRAW EMBEDDED PAGE INTO COLUMN
+   DRAW EMBEDDED PAGE
 ========================================================= */
 
 function drawEmbeddedPage(
@@ -1734,24 +3388,47 @@ function drawEmbeddedPage(
 
 
     /*
-     * Fit while preserving aspect ratio.
+     * Fit the original PDF page/half into
+     * the actual physical booklet-page area.
      *
-     * Nothing is rasterized here.
+     * The page is centered inside that area.
      */
     const scale =
         Math.min(
-            area.width / sourceWidth,
-            area.height / sourceHeight
+
+            area.width /
+                sourceWidth,
+
+            area.height /
+                sourceHeight
+
         );
 
 
     const drawWidth =
-        sourceWidth * scale;
+        sourceWidth *
+        scale;
+
 
     const drawHeight =
-        sourceHeight * scale;
+        sourceHeight *
+        scale;
 
 
+    /*
+     * Center inside the ACTUAL column.
+     *
+     * This is important:
+     *
+     * the center of the left image remains
+     * in the left page area,
+     *
+     * and the center of the right image
+     * remains in the right page area.
+     *
+     * The fold/gutter is not treated as
+     * another outer margin.
+     */
     const x =
         area.x +
         (
@@ -1771,40 +3448,24 @@ function drawEmbeddedPage(
     sheet.drawPage(
         embeddedPage.embedded,
         {
+
             x,
+
             y,
-            xScale: scale,
-            yScale: scale
+
+            xScale:
+                scale,
+
+            yScale:
+                scale
+
         }
     );
 }
 
 
 /* =========================================================
-   BOOKLET IMPOSITION
-=========================================================
-
-   Booklets require page counts divisible by 4.
-
-   Example with 8 pages:
-
-       Front 1: 8 | 1
-       Back  1: 2 | 7
-
-       Front 2: 6 | 3
-       Back  2: 4 | 5
-
-
-   The left/right arrangement remains identical
-   for both Horizontal and Vertical orientation.
-
-   The ONLY difference is the physical sheet:
-
-       Horizontal:
-           landscape
-
-       Vertical:
-           portrait
+   IMPOSITION
 ========================================================= */
 
 function createImpositionOrder(
@@ -1812,19 +3473,24 @@ function createImpositionOrder(
 ) {
 
     const paddedCount =
-        Math.ceil(count / 4) * 4;
+        Math.ceil(
+            count / 4
+        ) * 4;
 
-    const pages =
-        [];
+
+    const result = [];
+
 
     for (
         let sheetIndex = 0;
-        sheetIndex < paddedCount / 4;
+        sheetIndex <
+            paddedCount / 4;
         sheetIndex++
     ) {
 
         const low =
             sheetIndex * 2;
+
 
         const high =
             paddedCount -
@@ -1837,15 +3503,22 @@ function createImpositionOrder(
          *
          * high | low
          */
-        pages.push({
-            side: "front",
-            left: high < count
-                ? high
-                : null,
 
-            right: low < count
-                ? low
-                : null
+        result.push({
+
+            side:
+                "front",
+
+            left:
+                high < count
+                    ? high
+                    : null,
+
+            right:
+                low < count
+                    ? low
+                    : null
+
         });
 
 
@@ -1854,15 +3527,20 @@ function createImpositionOrder(
          *
          * low + 1 | high - 1
          */
+
         const backLeft =
             low + 1;
+
 
         const backRight =
             high - 1;
 
 
-        pages.push({
-            side: "back",
+        result.push({
+
+            side:
+                "back",
+
             left:
                 backLeft < count
                     ? backLeft
@@ -1873,46 +3551,46 @@ function createImpositionOrder(
                 backRight < count
                     ? backRight
                     : null
+
         });
+
     }
 
-    return pages;
+
+    return result;
 }
 
 
 /* =========================================================
-   BUILD FINAL BOOKLET PDF IN MEMORY
+   BUILD FINAL BOOKLET
 ========================================================= */
 
 async function buildBookletPdf() {
 
     if (!sourcePdf) {
+
         throw new Error(
             "Please upload a PDF first."
         );
+
     }
 
 
     if (
         selectedPages.size === 0
     ) {
+
         throw new Error(
             "Please select at least one page."
         );
+
     }
 
 
-    /*
-     * A separate output document.
-     */
     const outputPdf =
         await PDFDocument.create();
 
 
-    /*
-     * Get original selected pages as
-     * native embedded PDF pages.
-     */
     const embeddedPages =
         await embedSelectedPages(
             outputPdf
@@ -1924,38 +3602,28 @@ async function buildBookletPdf() {
 
 
     /*
-     * Number of booklet pages must be
-     * divisible by 4.
-     *
-     * We use null for automatic blank pages.
+     * Pad to a multiple of four.
      */
-    const paddedCount =
-        Math.ceil(
-            originalCount / 4
-        ) * 4;
-
-
     while (
-        embeddedPages.length <
-        paddedCount
+        embeddedPages.length % 4 !== 0
     ) {
 
         embeddedPages.push(null);
     }
 
 
-    const sheetWidthAndHeight =
+    const {
+        width:
+            sheetWidth,
+
+        height:
+            sheetHeight
+
+    } =
         getSheetDimensions();
 
 
-    const sheetWidth =
-        sheetWidthAndHeight.width;
-
-    const sheetHeight =
-        sheetWidthAndHeight.height;
-
-
-    const margin =
+    const outerMargin =
         Math.max(
             0,
             Number(
@@ -1975,80 +3643,99 @@ async function buildBookletPdf() {
 
     const areas =
         getColumnAreas(
+
             sheetWidth,
+
             sheetHeight,
-            margin,
+
+            outerMargin,
+
             gutter
+
         );
 
 
-    /*
-     * Make the actual imposition.
-     */
     const order =
         createImpositionOrder(
             originalCount
         );
 
 
-    /*
-     * Build physical sheets.
-     */
     for (
-        const imposedSheet of order
+        const imposed of order
     ) {
 
         const sheet =
             outputPdf.addPage([
+
                 sheetWidth,
+
                 sheetHeight
+
             ]);
 
 
         /*
-         * Left booklet page
+         * LEFT
          */
+
         if (
-            imposedSheet.left !== null
+            imposed.left !== null
         ) {
 
             const page =
                 embeddedPages[
-                    imposedSheet.left
+                    imposed.left
                 ];
+
 
             if (page) {
 
                 drawEmbeddedPage(
+
                     sheet,
+
                     page,
+
                     areas.left
+
                 );
+
             }
+
         }
 
 
         /*
-         * Right booklet page
+         * RIGHT
          */
+
         if (
-            imposedSheet.right !== null
+            imposed.right !== null
         ) {
 
             const page =
                 embeddedPages[
-                    imposedSheet.right
+                    imposed.right
                 ];
+
 
             if (page) {
 
                 drawEmbeddedPage(
+
                     sheet,
+
                     page,
+
                     areas.right
+
                 );
+
             }
+
         }
+
     }
 
 
@@ -2057,14 +3744,7 @@ async function buildBookletPdf() {
 
 
 /* =========================================================
-   BUILD BOOKLET PREVIEW
-=========================================================
-
-   The preview uses the same selected virtual
-   pages, but it renders them to browser canvases.
-
-   Again, these preview canvases are NOT used
-   for the final PDF.
+   BOOKLET PREVIEW
 ========================================================= */
 
 buildPreviewBtn.addEventListener(
@@ -2074,21 +3754,26 @@ buildPreviewBtn.addEventListener(
         try {
 
             bookletStatus.textContent =
-                "Building booklet preview...";
+                "Building booklet preview…";
+
 
             await buildBookletPreview();
 
-            bookletStatus.textContent =
-                "Booklet preview created.";
 
-        } catch (error) {
+            bookletStatus.textContent =
+                "Booklet preview ready.";
+
+        }
+        catch (error) {
 
             console.error(error);
 
             bookletStatus.textContent =
-                "Error creating booklet preview: " +
+                "Could not build preview: " +
                 error.message;
+
         }
+
     }
 );
 
@@ -2098,24 +3783,21 @@ async function buildBookletPreview() {
     bookletPreview.innerHTML =
         "";
 
-    bookletPreviewData =
-        [];
-
 
     if (
         selectedPages.size === 0
     ) {
 
-        bookletStatus.textContent =
-            "Select at least one page.";
+        bookletPreview.innerHTML = `
+            <div class="empty-state">
+                Select at least one page to preview the booklet.
+            </div>
+        `;
 
         return;
     }
 
 
-    /*
-     * Create ordered selected page indexes.
-     */
     const selectedIndexes =
         Array.from(
             selectedPages
@@ -2124,142 +3806,139 @@ async function buildBookletPreview() {
         );
 
 
-    const paddedCount =
-        Math.ceil(
-            selectedIndexes.length / 4
-        ) * 4;
-
-
-    const paddedIndexes =
+    const padded =
         selectedIndexes.slice();
 
 
     while (
-        paddedIndexes.length <
-        paddedCount
+        padded.length % 4 !== 0
     ) {
-        paddedIndexes.push(null);
+
+        padded.push(null);
     }
 
 
-    /*
-     * Create the exact same booklet order
-     * as the final PDF.
-     */
     const order =
         createImpositionOrder(
             selectedIndexes.length
         );
 
 
-    /*
-     * IMPORTANT:
-     *
-     * We need a map from booklet-page number
-     * to selected virtual page.
-     */
-    const orderedVirtualPages =
-        paddedIndexes;
-
-
     for (
-        let sheetIndex = 0;
-        sheetIndex < order.length;
-        sheetIndex++
+        let i = 0;
+        i < order.length;
+        i++
     ) {
 
         const imposed =
-            order[sheetIndex];
+            order[i];
 
 
-        const sheetPreview =
-            document.createElement("div");
+        const sheetContainer =
+            document.createElement(
+                "div"
+            );
 
-        sheetPreview.className =
+
+        sheetContainer.className =
             "sheet-preview";
 
 
         const title =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         title.className =
             "sheet-title";
 
-        title.textContent =
-            `Sheet ${Math.floor(sheetIndex / 2) + 1} — ` +
-            `${imposed.side}`;
+
+        title.innerHTML =
+            `
+            <span>
+                Sheet ${Math.floor(i / 2) + 1}
+            </span>
+
+            <span>
+                ${imposed.side}
+            </span>
+            `;
 
 
         const sheet =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         sheet.className =
             "sheet";
 
 
-        if (
-            bookletOrientation.value ===
-            "vertical"
-        ) {
-            sheet.classList.add(
-                "vertical"
-            );
-        }
+        sheet.classList.add(
+            bookletOrientation.value
+        );
 
 
-        /*
-         * LEFT COLUMN
-         */
-        const leftHalf =
+        const leftIndex =
+            imposed.left !== null
+                ? padded[
+                    imposed.left
+                ]
+                : null;
+
+
+        const rightIndex =
+            imposed.right !== null
+                ? padded[
+                    imposed.right
+                ]
+                : null;
+
+
+        const left =
             createPreviewHalf(
-                imposed.left !== null
-                    ? orderedVirtualPages[
-                        imposed.left
-                    ]
-                    : null
+                leftIndex
             );
 
 
-        /*
-         * RIGHT COLUMN
-         */
-        const rightHalf =
+        const right =
             createPreviewHalf(
-                imposed.right !== null
-                    ? orderedVirtualPages[
-                        imposed.right
-                    ]
-                    : null
+                rightIndex
             );
 
 
         sheet.appendChild(
-            leftHalf
+            left
         );
+
 
         sheet.appendChild(
-            rightHalf
+            right
         );
 
 
-        sheetPreview.appendChild(
+        sheetContainer.appendChild(
             title
         );
 
-        sheetPreview.appendChild(
+
+        sheetContainer.appendChild(
             sheet
         );
 
 
         bookletPreview.appendChild(
-            sheetPreview
+            sheetContainer
         );
+
     }
 }
 
 
 /* =========================================================
-   CREATE BOOKLET PREVIEW HALF
+   PREVIEW HALF
 ========================================================= */
 
 function createPreviewHalf(
@@ -2270,6 +3949,7 @@ function createPreviewHalf(
         document.createElement(
             "div"
         );
+
 
     half.className =
         "sheet-half";
@@ -2285,15 +3965,19 @@ function createPreviewHalf(
                 "div"
             );
 
+
         blank.className =
             "blank-label";
+
 
         blank.textContent =
             "Blank page";
 
+
         half.appendChild(
             blank
         );
+
 
         return half;
     }
@@ -2310,16 +3994,15 @@ function createPreviewHalf(
             "canvas"
         );
 
+
     canvas.width =
         virtualPage.canvas.width;
+
 
     canvas.height =
         virtualPage.canvas.height;
 
 
-    /*
-     * Draw preview only.
-     */
     canvas
         .getContext("2d")
         .drawImage(
@@ -2329,11 +4012,9 @@ function createPreviewHalf(
         );
 
 
-    /*
-     * Give it a sensible fitting size.
-     */
     canvas.style.maxWidth =
         "96%";
+
 
     canvas.style.maxHeight =
         "96%";
@@ -2344,20 +4025,22 @@ function createPreviewHalf(
     );
 
 
-    const pageNumber =
+    const number =
         document.createElement(
             "div"
         );
 
-    pageNumber.className =
+
+    number.className =
         "sheet-page-number";
 
-    pageNumber.textContent =
-        `Selected page ${virtualIndex + 1}`;
+
+    number.textContent =
+        `Page ${virtualIndex + 1}`;
 
 
     half.appendChild(
-        pageNumber
+        number
     );
 
 
@@ -2367,13 +4050,6 @@ function createPreviewHalf(
 
 /* =========================================================
    DOWNLOAD SELECTED PAGES
-=========================================================
-
-   This produces a PDF containing the selected
-   whole pages/halves in selection order.
-
-   It is also native PDF content rather than
-   raster screenshots.
 ========================================================= */
 
 downloadSelectedBtn.addEventListener(
@@ -2383,22 +4059,27 @@ downloadSelectedBtn.addEventListener(
         try {
 
             if (!sourcePdf) {
+
                 throw new Error(
                     "Please upload a PDF first."
                 );
+
             }
+
 
             if (
                 selectedPages.size === 0
             ) {
+
                 throw new Error(
                     "Please select at least one page."
                 );
+
             }
 
 
             bookletStatus.textContent =
-                "Creating selected-pages PDF...";
+                "Creating selected-pages PDF…";
 
 
             const outputPdf =
@@ -2418,21 +4099,32 @@ downloadSelectedBtn.addEventListener(
 
                 const outputPage =
                     outputPdf.addPage([
+
                         page.sourceWidth,
+
                         page.sourceHeight
+
                     ]);
 
 
                 outputPage.drawPage(
+
                     page.embedded,
+
                     {
+
                         x: 0,
+
                         y: 0,
 
                         xScale: 1,
+
                         yScale: 1
+
                     }
+
                 );
+
             }
 
 
@@ -2449,20 +4141,23 @@ downloadSelectedBtn.addEventListener(
             bookletStatus.textContent =
                 "Selected-pages PDF downloaded.";
 
-        } catch (error) {
+        }
+        catch (error) {
 
             console.error(error);
 
             bookletStatus.textContent =
-                "Error creating selected-pages PDF: " +
+                "Could not create selected PDF: " +
                 error.message;
+
         }
+
     }
 );
 
 
 /* =========================================================
-   DOWNLOAD FINAL BOOKLET
+   DOWNLOAD BOOKLET
 ========================================================= */
 
 downloadBookletBtn.addEventListener(
@@ -2471,36 +4166,20 @@ downloadBookletBtn.addEventListener(
 
         try {
 
-            if (!sourcePdf) {
-                throw new Error(
-                    "Please upload a PDF first."
-                );
-            }
-
-            if (
-                selectedPages.size === 0
-            ) {
-                throw new Error(
-                    "Please select at least one page."
-                );
-            }
-
-
             bookletStatus.textContent =
-                "Creating final booklet PDF...";
+                "Creating final booklet PDF…";
 
 
             const bytes =
                 await buildBookletPdf();
 
 
-            const orientation =
-                bookletOrientation.value;
-
-
             const filename =
-                orientation === "vertical"
+                bookletOrientation.value ===
+                "vertical"
+
                     ? "booklet-vertical.pdf"
+
                     : "booklet-horizontal.pdf";
 
 
@@ -2511,22 +4190,25 @@ downloadBookletBtn.addEventListener(
 
 
             bookletStatus.textContent =
-                "Final booklet PDF downloaded.";
+                "Final booklet downloaded.";
 
-        } catch (error) {
+        }
+        catch (error) {
 
             console.error(error);
 
             bookletStatus.textContent =
-                "Error creating booklet: " +
+                "Could not create booklet: " +
                 error.message;
+
         }
+
     }
 );
 
 
 /* =========================================================
-   DOWNLOAD HELPER
+   DOWNLOAD
 ========================================================= */
 
 function downloadPdf(
@@ -2555,26 +4237,33 @@ function downloadPdf(
             "a"
         );
 
+
     link.href =
         url;
 
+
     link.download =
         filename;
+
 
     document.body.appendChild(
         link
     );
 
+
     link.click();
+
 
     link.remove();
 
 
     setTimeout(
         () => {
+
             URL.revokeObjectURL(
                 url
             );
+
         },
         1000
     );
@@ -2582,77 +4271,30 @@ function downloadPdf(
 
 
 /* =========================================================
-   STATUS HELPER
+   STATUS
 ========================================================= */
 
 function setStatus(
     element,
     message,
-    isError
+    error
 ) {
 
     element.textContent =
         message;
 
+
     element.style.color =
-        isError
-            ? "#dc2626"
-            : "#374151";
+        error
+            ? "#b95757"
+            : "";
 }
 
 
 /* =========================================================
-   PAPER / ORIENTATION CHANGE
+   BUTTON STATES
 ========================================================= */
 
-paperSize.addEventListener(
-    "change",
-    () => {
-
-        /*
-         * Nothing else is required.
-         *
-         * The dimensions are recalculated when
-         * the booklet is generated.
-         */
-    }
-);
-
-
-bookletOrientation.addEventListener(
-    "change",
-    () => {
-
-        /*
-         * Rebuild preview automatically if one
-         * already exists.
-         */
-        if (
-            selectedPages.size > 0
-        ) {
-
-            buildBookletPreview()
-                .catch(console.error);
-        }
-    }
-);
-
-
-/* =========================================================
-   INITIAL UI STATE
-========================================================= */
-
-downloadSelectedBtn.disabled =
-    true;
-
-downloadBookletBtn.disabled =
-    true;
-
-
-/*
- * Enable download buttons once a PDF
- * and at least one selection exist.
- */
 function updateButtonStates() {
 
     const enabled =
@@ -2663,40 +4305,82 @@ function updateButtonStates() {
     downloadSelectedBtn.disabled =
         !enabled;
 
+
     downloadBookletBtn.disabled =
         !enabled;
 }
 
 
-/*
- * Patch selection updater so button state
- * follows selection.
- */
-const originalUpdateSelectionCount =
-    updateSelectionCount;
+/* =========================================================
+   PAPER CHANGE
+========================================================= */
 
-updateSelectionCount = function() {
-
-    originalUpdateSelectionCount();
-
-    updateButtonStates();
-};
-
-
-/*
- * Also enable after PDF upload.
- */
-pdfFile.addEventListener(
+paperSize.addEventListener(
     "change",
     () => {
 
-        setTimeout(
-            updateButtonStates,
-            0
-        );
+        if (
+            selectedPages.size > 0
+        ) {
+
+            buildBookletPreview()
+                .catch(console.error);
+
+        }
+
     }
 );
 
+
+/* =========================================================
+   MARGIN / GUTTER CHANGE
+=========================================================
+
+   Rebuild the visual preview so changes to
+   margin and gutter can be seen immediately.
+========================================================= */
+
+marginInput.addEventListener(
+    "input",
+    () => {
+
+        if (
+            selectedPages.size > 0
+        ) {
+
+            buildBookletPreview()
+                .catch(console.error);
+
+        }
+
+    }
+);
+
+
+gutterInput.addEventListener(
+    "input",
+    () => {
+
+        if (
+            selectedPages.size > 0
+        ) {
+
+            buildBookletPreview()
+                .catch(console.error);
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL STATE
+========================================================= */
+
+updateButtonStates();
+
+updateOrientationDescription();
 
 </script>
 
