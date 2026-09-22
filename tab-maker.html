@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vector PDF Tab Maker</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Lato:wght@400;700&display=swap');
+:root{font-family:Inter,system-ui,sans-serif;color:#202124;background:#f5f5f6}
+*{box-sizing:border-box}
+body{margin:0}.wrap{max-width:1120px;margin:auto;padding:24px}
+h1{margin:0 0 6px;font-size:1.8rem}h2{font-size:1.15rem;margin:0 0 12px}
+p{color:#555;line-height:1.45}.panel{background:#fff;border:1px solid #ddd;border-radius:12px;padding:18px;margin:14px 0;box-shadow:0 1px 2px #0000000b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+label.field{display:flex;flex-direction:column;gap:5px;font-weight:650;font-size:.9rem}
+input,select,button{font:inherit}input,select{padding:9px;border:1px solid #bbb;border-radius:7px;background:#fff}
+button{padding:9px 13px;border:0;border-radius:8px;background:#222;color:#fff;cursor:pointer;font-weight:700}
+button.secondary{background:#e8e8ea;color:#222}button.danger{background:#a83232}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.hint{color:#666;font-size:.86rem}
+table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border-bottom:1px solid #ddd;padding:7px;text-align:left}th{font-size:.85rem;color:#555}
+td input{width:100%}.pageInput{max-width:120px}.status{white-space:pre-wrap;margin-top:10px}.dangerText{color:#a00}
+.badge{display:inline-block;background:#eee;padding:3px 7px;border-radius:99px;font-size:.78rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Vector PDF Tab Maker</h1>
+<p>Load an already-imposed PDF, assign custom section labels to PDF pages, and export a new vector PDF with white outside tabs and cut lines. The original PDF is not rasterized.</p>
+
+<div class="panel">
+<h2>1. Source PDF</h2>
+<input id="pdfFile" type="file" accept="application/pdf">
+<div id="fileInfo" class="hint"></div>
+</div>
+
+<div class="panel">
+<h2>2. Tab settings</h2>
+<div class="grid">
+<label class="field">Tab width
+<input id="tabW" type="number" value="0.35" min="0.05" step="0.01">
+<span class="hint">inches added outside the original page</span></label>
+
+<label class="field">Maximum tab height
+<input id="maxTabH" type="number" value="1.00" min="0.10" max="1.00" step="0.01">
+<span class="hint">never exceeds 1 inch</span></label>
+
+<label class="field">Top/bottom inset
+<input id="edgeInset" type="number" value="0.15" min="0" step="0.01">
+<span class="hint">inches</span></label>
+
+<label class="field">Font
+<select id="font"><option>Cardo</option><option>Lato</option></select></label>
+
+<label class="field">Font size
+<input id="fontSize" type="number" value="9" min="4" max="30" step="0.5">
+<span class="hint">pt</span></label>
+
+<label class="field">Cut line width
+<input id="lineWidth" type="number" value="0.5" min="0.1" max="2" step="0.1">
+<span class="hint">points</span></label>
+</div>
+<p class="hint">
+Tabs automatically fill the available vertical area. Each tab is no taller than the maximum height. If there are too many tabs for one vertical run, the layout starts again at the top in a second tab column and the app automatically adds another tab-width of outside space. This keeps every exported page the same final width.
+</p>
+</div>
+
+<div class="panel">
+<h2>3. Section labels</h2>
+<p>Add one row for each tab. Enter the <b>1-based PDF page number</b> where that section begins and the exact text you want printed on the tab. The tab appears only on that page.</p>
+<div class="row">
+<button id="addRow">+ Add section</button>
+<button class="secondary" id="example">Load example</button>
+<button class="secondary" id="clearRows">Clear all</button>
+</div>
+<table>
+<thead><tr><th style="width:140px">PDF page</th><th>Tab text / section header</th><th style="width:80px"></th></tr></thead>
+<tbody id="tabRows"></tbody>
+</table>
+</div>
+
+<div class="panel">
+<h2>4. Cover pages</h2>
+<label style="display:flex;gap:8px;align-items:center;font-weight:600">
+<input id="coverMode" type="checkbox" checked>
+Treat the first 2 and last 2 PDF pages as cover/imposed cover pages
+</label>
+<p class="hint">Cover pages still receive the added outside width, but they get only the <b>new outer-edge cut line</b>. No tab boxes or tab start/end cut lines are drawn on those four pages.</p>
+</div>
+
+<div class="panel">
+<h2>5. Export</h2>
+<button id="make">Create vector PDF</button>
+<div id="status" class="status"></div>
+</div>
+
+<div class="panel">
+<h2>How the cut lines work</h2>
+<ul>
+<li>Every page is expanded on its <b>outside edge</b>: right side for odd pages, left side for even pages.</li>
+<li>A vertical line marks the <b>original page edge</b>.</li>
+<li>A vertical line marks the <b>new outside edge</b>.</li>
+<li>Horizontal lines mark the beginning/end of each tab.</li>
+<li>The tab area is white and the section text is centered and rotated as a whole.</li>
+<li>All source PDF text, images, and vector artwork remain PDF content; this app does not render pages to images.</li>
+</ul>
+</div>
+</div>
+
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const inch = n => Number(n) * 72;
+const rgb = PDFLib.rgb;
+
+function setStatus(msg,bad=false){$('status').textContent=msg;$('status').className='status'+(bad?' dangerText':'')}
+
+function addRow(page='',label=''){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input class="pageInput" type="number" min="1" step="1" value="${page}"></td>
+  <td><input class="labelInput" type="text" value="${label.replace(/"/g,'&quot;')}" placeholder="Section header"></td>
+  <td><button type="button" class="danger remove">Remove</button></td>`;
+  tr.querySelector('.remove').onclick=()=>tr.remove();
+  $('tabRows').appendChild(tr);
+}
+$('addRow').onclick=()=>addRow();
+$('clearRows').onclick=()=>{$('tabRows').innerHTML=''};
+$('example').onclick=()=>{
+  $('tabRows').innerHTML='';
+  [['1','Genesis'],['18','Exodus'],['34','Leviticus'],['50','Numbers'],['67','Deuteronomy']].forEach(x=>addRow(...x));
+};
+
+$('pdfFile').onchange=()=>{
+ const f=$('pdfFile').files[0];
+ $('fileInfo').textContent=f ? `${f.name} — ${(f.size/1048576).toFixed(2)} MB` : '';
+};
+
+function readRows(){
+ return [...$('tabRows').querySelectorAll('tr')].map((tr,i)=>{
+   const page=Number(tr.querySelector('.pageInput').value);
+   const label=tr.querySelector('.labelInput').value.trim();
+   if(!Number.isInteger(page)||page<1) throw new Error(`Row ${i+1}: enter a valid PDF page number.`);
+   if(!label) throw new Error(`Row ${i+1}: enter tab text.`);
+   return {page,label};
+ });
+}
+
+async function loadFont(fontName){
+  // Fontsource provides TTF files suitable for PDF embedding. A real embedded
+  // font is used rather than relying on the browser's @font-face rendering.
+  const urls={
+    Cardo:'https://cdn.jsdelivr.net/npm/@fontsource/cardo@5.0.18/files/cardo-latin-400-normal.ttf',
+    Lato:'https://cdn.jsdelivr.net/npm/@fontsource/lato@5.0.18/files/lato-latin-400-normal.ttf'
+  };
+  const r=await fetch(urls[fontName]);
+  if(!r.ok) throw new Error(`Could not download the ${fontName} font. Check your internet connection and try again.`);
+  return new Uint8Array(await r.arrayBuffer());
+}
+
+function layoutTabs(count,height,inset,maxH){
+  if(!count) return {tabH:0,cols:0,slots:[]};
+  const usable=Math.max(0,height-2*inset);
+  if(usable<=0) throw new Error('The top/bottom inset leaves no usable page height.');
+  // Number of tabs that fit in one vertical run while respecting the <=1" cap.
+  let nPerCol=Math.max(1,Math.floor(usable/maxH));
+  let tabH=Math.min(maxH,usable/nPerCol);
+  // If the count would make the last run too sparse, redistribute each
+  // column to use the available height while never exceeding maxH.
+  const cols=Math.ceil(count/nPerCol);
+  const base=Math.floor(count/cols), rem=count%cols;
+  const slots=[];
+  let idx=0;
+  for(let c=0;c<cols;c++){
+    const n=base+(c<rem?1:0);
+    const h=Math.min(maxH,usable/n);
+    for(let r=0;r<n;r++){
+      const yTop=height-inset-r*h;
+      slots.push({index:idx++,col:c,row:r,n,h,y:yTop-h});
+    }
+  }
+  return {tabH,cols,slots};
+}
+
+$('make').onclick=async()=>{
+ try{
+  setStatus('Preparing PDF…');
+  const file=$('pdfFile').files[0];
+  if(!file) throw new Error('Choose a PDF first.');
+  const rows=readRows();
+  if(!rows.length) throw new Error('Add at least one section row.');
+
+  const src=await file.arrayBuffer();
+  const pdf=await PDFLib.PDFDocument.load(src,{updateMetadata:false});
+  pdf.registerFontkit(fontkit);
+
+  const pages=pdf.getPages();
+  for(const r of rows){
+    if(r.page>pages.length) throw new Error(`Page ${r.page} is outside this ${pages.length}-page PDF.`);
+  }
+  const duplicate=rows.map(r=>r.page).filter((p,i,a)=>a.indexOf(p)!==i);
+  if(duplicate.length) throw new Error(`Each section must use a unique page. Duplicate page: ${duplicate[0]}.`);
+
+  const tabW=inch($('tabW').value);
+  const maxH=Math.min(1,inch($('maxTabH').value));
+  const inset=inch($('edgeInset').value);
+  const fs=Number($('fontSize').value);
+  const lw=Number($('lineWidth').value);
+  if(tabW<=0||maxH<=0) throw new Error('Tab width and height must be positive.');
+
+  setStatus('Embedding font…');
+  const font=await pdf.embedFont(await loadFont($('font').value),{subset:true});
+
+  // A page's added outside width must accommodate however many tab columns
+  // are required by the entire document. This guarantees identical final
+  // dimensions on every page.
+  const sample=pages[0].getSize();
+  const coverEnabled=$('coverMode').checked;
+  const tabLayout=layoutTabs(rows.length,sample.height,inset,maxH);
+  const addedWidth=tabLayout.cols*tabW;
+
+  // Add identical width to every page. pdf-lib does not have a direct
+  // "resize page preserving content" convenience, so resize the media/crop
+  // boxes and translate existing content toward the inside edge.
+  for(let i=0;i<pages.length;i++){
+    const page=pages[i];
+    const {width,height}=page.getSize();
+    const even=(i+1)%2===0;
+    // Outside is left on even pages, right on odd pages.
+    if(even){
+      page.setSize(width+addedWidth,height);
+      page.translateContent(addedWidth,0);
+    }else{
+      page.setSize(width+addedWidth,height);
+    }
+  }
+
+  // Put section rows in document order, not table order, so automatic
+  // vertical distribution follows the physical PDF page sequence.
+  const ordered=[...rows].sort((a,b)=>a.page-b.page);
+  const layout=layoutTabs(ordered.length,sample.height,inset,maxH);
+  const black=rgb(0,0,0), white=rgb(1,1,1);
+
+  // Assign each tab to a column/run and vertical slot.
+  ordered.forEach((r,i)=>r._slot=layout.slots[i]);
+
+  for(const r of ordered){
+    const page=pages[r.page-1];
+    const {width,height}=page.getSize();
+    const even=(r.page%2===0);
+    const isCover=coverEnabled && (r.page<=2 || r.page>pages.length-2);
+
+    // Always cover the newly added outside area with white.
+    const originalWidth=width-addedWidth;
+    page.drawRectangle({
+      x:even?0:originalWidth,
+      y:0,width:addedWidth,height,
+      color:white
+    });
+
+    // The cover gets only the NEW outside-edge cut line.
+    if(isCover){
+      const outerX=even?0:width;
+      page.drawLine({start:{x:outerX,y:0},end:{x:outerX,y:height},thickness:lw,color:black});
+      continue;
+    }
+
+    const s=r._slot;
+    const col=s.col;
+    const x=even ? originalWidth - col*tabW - tabW : originalWidth + col*tabW;
+    const y=s.y;
+
+    // White tab rectangle.
+    page.drawRectangle({x,y,width:tabW,height:s.h,color:white});
+
+    // Original page edge (the trim boundary) and new outer edge.
+    const trimX=originalWidth;
+    const outerX=even?0:width;
+    page.drawLine({start:{x:trimX,y:0},end:{x:trimX,y:height},thickness:lw,color:black});
+    page.drawLine({start:{x:outerX,y:0},end:{x:outerX,y:height},thickness:lw,color:black});
+
+    // Horizontal tab start/end cut lines.
+    page.drawLine({start:{x,y:y},end:{x:x+tabW,y:y},thickness:lw,color:black});
+    page.drawLine({start:{x,y:y+s.h},end:{x:x+tabW,y:y+s.h},thickness:lw,color:black});
+
+    // Rotate the whole label. The two page sides mirror the rotation so the
+    // word reads from top to bottom when the page is held upright.
+    const tw=font.widthOfTextAtSize(r.label,fs);
+    const cx=x+tabW/2;
+    const cy=y+s.h/2;
+    const angle=even?-90:90;
+    const rad=angle*Math.PI/180;
+    // Center a rotated text run using the text width as its vertical extent.
+    const dx=-Math.sin(rad)*(tw/2);
+    const dy=Math.cos(rad)*(tw/2);
+    page.drawText(r.label,{
+      x:cx-dx,
+      y:cy-dy,
+      size:fs,
+      font,
+      color:black,
+      rotate:PDFLib.degrees(angle)
+    });
+  }
+
+  setStatus('Saving vector PDF…');
+  const out=await pdf.save({useObjectStreams:false});
+  const blob=new Blob([out],{type:'application/pdf'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=file.name.replace(/\.pdf$/i,'')+'-tabs.pdf';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  setStatus(`Done. ${pages.length} pages exported. ${ordered.length} section tab(s), ${layout.cols} tab column(s). Original PDF content was kept as vector/text PDF content.`);
+ }catch(e){
+  console.error(e);
+  setStatus(e.message||String(e),true);
+ }
+};
+</script>
+</body>
+</html>
